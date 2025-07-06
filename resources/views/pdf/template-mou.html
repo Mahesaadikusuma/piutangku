@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Surat Permohonan Izin Penelitian</title>
+    <style>
+        body {
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 12px;
+            line-height: 1.6;
+            margin: 40px;
+        }
+
+        .header {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .content {
+            text-align: justify;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+
+        .table th,
+        .table td {
+            border: 1px solid #000;
+            padding: 5px;
+            text-align: left;
+        }
+
+        .signature {
+            width: 100%;
+            margin-top: 40px;
+        }
+
+        .signature .right {
+            float: right;
+            text-align: center;
+        }
+
+        .clear {
+            clear: both;
+        }
+
+        .mt-2 {
+            margin-top: 10px;
+        }
+
+        .mt-4 {
+            margin-top: 20px;
+        }
+
+        .mb-2 {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        Jakarta, 2 Juni 2025
+    </div>
+
+    <div class="content">
+        <p>Nomor : 81-080/SP/Kaprodi-IF/FASILKOM/UEU/EXT/VI/2025<br>
+            Lampiran : -<br>
+            Perihal : Surat Permohonan Izin Untuk Penelitian</p>
+
+        <p>Kepada Yth.<br>
+            Supriadi - Accounting dan Finance Manager<br>
+            PT. Tayoh Sarana Sukses<br>
+            Jl. Raya Narogong KM 13,5 pangkalan IV Cikiwul<br>
+            Bekasi Jawa Barat 17152 Indonesia</p>
+
+        <p>Dengan Hormat,</p>
+
+        <p>
+            Sehubungan dengan mata kuliah Skripsi/Tugas Akhir yang memerlukan data dan informasi bagi mahasiswa Fakultas
+            Ilmu Komputer Program Studi Teknik Informatika, bersama ini kami sampaikan bahwa mahasiswa kami bermaksud
+            untuk mencari beberapa data / informasi. Adapun nama mahasiswa tersebut adalah:
+        </p>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>NIM</th>
+                    <th>No HP</th>
+                    <th>Judul</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Mahesa Adi Kusuma</td>
+                    <td>20210801132</td>
+                    <td>085775884625</td>
+                    <td>Perancangan Aplikasi Menggunakan Metode Repository Desain Pattern Studi Kasus Piutang Dagang
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
+            Kami berharap Bapak/Ibu memberikan izin pengambilan data untuk mahasiswa tersebut.
+        </p>
+
+        <p>Demikianlah atas perhatian dan kerjasamanya, kami ucapkan terima kasih.</p>
+    </div>
+
+    <div class="signature">
+        <div class="right">
+            <p>Kaprodi Teknik Informatika</p>
+            <br><br><br>
+            <p><strong>Dr. Riya Widayanti, S.Kom, MMSI</strong></p>
+        </div>
+    </div>
+
+    <div class="clear"></div>
+
+</body>
+
+</html>
+
+
+<!-- <style>
+    h4 {
+        margin: 0;
+    }
+
+    img {
+        width: 100px;
+        height: 100px;
+    }
+
+    .w-full {
+        width: 100%;
+    }
+
+    .w-half {
+        width: 50%;
+    }
+
+    .margin-top {
+        margin-top: 1.25rem;
+    }
+
+    .footer {
+        font-size: 0.875rem;
+        padding: 1rem;
+        background-color: rgb(241 245 249);
+    }
+
+    table {
+        width: 100%;
+        border-spacing: 0;
+    }
+
+    table.products {
+        font-size: 0.875rem;
+    }
+
+    table.products tr {
+        background-color: rgb(96 165 250);
+    }
+
+    table.products th {
+        color: #ffffff;
+        padding: 0.5rem;
+    }
+
+    table tr.items {
+        background-color: rgb(241 245 249);
+    }
+
+    table tr.items td {
+        padding: 0.5rem;
+    }
+
+    .total {
+        text-align: right;
+        margin-top: 1rem;
+        font-size: 0.875rem;
+    }
+</style>
+@endpush
+<x-layouts.pdf>
+    <table class="w-full">
+        <tr>
+            <td class="w-half">
+                <img src="{{ public_path('images/logo.png') }}" alt="laravel daily" />
+            </td>
+            <td class="w-half">
+                <h2>Invoice ID: 834847473</h2>
+            </td>
+        </tr>
+    </table>
+
+    <div class="margin-top">
+        <table class="w-full">
+            <tr>
+                <td class="w-half">
+                    <div>
+                        <h4>To:</h4>
+                    </div>
+                    <div>John Doe</div>
+                    <div>123 Acme Str.</div>
+                </td>
+                <td class="w-half">
+                    <div>
+                        <h4>From:</h4>
+                    </div>
+                    <div>Laravel Daily</div>
+                    <div>London</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="margin-top">
+        <table class="products">
+            <tr>
+                <th>Qty</th>
+                <th>Description</th>
+                <th>Price</th>
+            </tr>
+
+            @foreach($data as $item)
+            <tr class="items">
+                <td>
+                    {{ $item['quantity'] }}
+                </td>
+                <td>
+                    {{ $item['description'] }}
+                </td>
+                <td>
+                    {{ $item['price'] }}
+                </td>
+            </tr>
+            @endforeach
+        </table>
+    </div>
+
+    <div class="total">
+        Total: $129.00 USD
+    </div>
+
+    <div class="footer margin-top">
+        <div>Thank you</div>
+        <div>&copy; Laravel Daily</div>
+    </div>
+</x-layouts.pdf>  -->
+
+
+<!-- @push("styles")
+<style>
+    * {
+        font-family: Verdana, Arial, sans-serif;
+    }
+
+    table {
+        font-size: x-small;
+    }
+
+    tfoot tr td {
+        font-weight: bold;
+        font-size: x-small;
+    }
+
+    .gray {
+        background-color: lightgray
+    }
+</style>
+@endpush
+<x-layouts.pdf>
+    <table width="100%">
+        <tr>
+            <td valign="top"><img src="{{ public_path('images/logo.png') }}" alt="" width="100" height="100" /></td>
+            <td align="right">
+                <h3>Shinra Electric power company</h3>
+                <pre>
+                    Company representative name
+                    Company address
+                    Tax ID
+                    phone
+                    fax
+                </pre>
+            </td>
+        </tr>
+
+    </table>
+
+    <table width="100%">
+        <tr>
+            <td><strong>From:</strong> Linblum - Barrio teatral</td>
+            <td><strong>To:</strong> Linblum - Barrio Comercial</td>
+        </tr>
+
+    </table>
+
+    <br />
+
+    <table width="100%">
+        <thead style="background-color: lightgray;">
+            <tr>
+                <th>#</th>
+                <th>Description</th>
+                <th>Quantity</th>
+                <th>Unit Price $</th>
+                <th>Total $</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">1</th>
+                <td>Playstation IV - Black</td>
+                <td align="right">1</td>
+                <td align="right">1400.00</td>
+                <td align="right">1400.00</td>
+            </tr>
+            <tr>
+                <th scope="row">1</th>
+                <td>Metal Gear Solid - Phantom</td>
+                <td align="right">1</td>
+                <td align="right">105.00</td>
+                <td align="right">105.00</td>
+            </tr>
+            <tr>
+                <th scope="row">1</th>
+                <td>Final Fantasy XV - Game</td>
+                <td align="right">1</td>
+                <td align="right">130.00</td>
+                <td align="right">130.00</td>
+            </tr>
+        </tbody>
+
+        <tfoot>
+            <tr>
+                <td colspan="3"></td>
+                <td align="right">Subtotal $</td>
+                <td align="right">1635.00</td>
+            </tr>
+            <tr>
+                <td colspan="3"></td>
+                <td align="right">Tax $</td>
+                <td align="right">294.3</td>
+            </tr>
+            <tr>
+                <td colspan="3"></td>
+                <td align="right">Total $</td>
+                <td align="right" class="gray">$ 1929.3</td>
+            </tr>
+        </tfoot>
+    </table>
+</x-layouts.pdf>  -->
