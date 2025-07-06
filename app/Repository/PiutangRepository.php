@@ -204,65 +204,69 @@ class PiutangRepository implements PiutangInterface
 
     public function agePiutangPerCustomer(int $limit = 10, ?string $search = null)
     {
-        $today = Carbon::now()->toDateString();
-
-        // Subquery untuk menghitung total_piutang yang belum dibayar per user_id
-        $subqueryTotalPiutang = DB::table('piutangs')
-            ->select('user_id', DB::raw('SUM(jumlah_piutang) as total_piutang_per_user'))
-            ->where('status_pembayaran', StatusType::PENDING->value)
-            ->groupBy('user_id');
-
-        $query = DB::table('piutangs')
+        $query = DB::query()
+            ->from('piutangs')
             ->join('users', 'piutangs.user_id', '=', 'users.id')
             ->join('customers', 'customers.user_id', '=', 'users.id')
-            ->leftJoin('transactions', function ($join) {
-                // Pastikan join transactions hanya untuk piutang yang relevan
-                $join->on('piutangs.id', '=', 'transactions.piutang_id')
-                    ->where('transactions.status', StatusType::SUCCESS->value); // Filter transaksi yang sukses saja di sini
-            })
-            // Gabungkan dengan subquery total piutang per user
-            ->joinSub($subqueryTotalPiutang, 'total_pending_piutangs', function ($join) {
-                $join->on('users.id', '=', 'total_pending_piutangs.user_id');
-            })
-            ->where('piutangs.status_pembayaran', StatusType::PENDING->value)
             ->select(
                 'users.id as user_id',
                 'users.name as user_name',
-                'customers.id as customer_id',
-                'total_pending_piutangs.total_piutang_per_user as total_piutang', // Ambil dari subquery
-                DB::raw("
-                    SUM(CASE
-                        WHEN DATEDIFF('$today', piutangs.tanggal_jatuh_tempo) BETWEEN 0 AND 30
-                        THEN IFNULL(transactions.transaction_total, 0) ELSE 0 END
-                    ) as age_0_30
-                "),
-                DB::raw("
-                    SUM(CASE
-                        WHEN DATEDIFF('$today', piutangs.tanggal_jatuh_tempo) BETWEEN 31 AND 60
-                        THEN IFNULL(transactions.transaction_total, 0) ELSE 0 END
-                    ) as age_31_60
-                "),
-                DB::raw("
-                    SUM(CASE
-                        WHEN DATEDIFF('$today', piutangs.tanggal_jatuh_tempo) BETWEEN 61 AND 90
-                        THEN IFNULL(transactions.transaction_total, 0) ELSE 0 END
-                    ) as age_61_90
-                "),
-                DB::raw("
-                    SUM(CASE
-                        WHEN DATEDIFF('$today', piutangs.tanggal_jatuh_tempo) > 90
-                        THEN IFNULL(transactions.transaction_total, 0) ELSE 0 END
-                    ) as age_90_plus
-                ")
-            )
-            // Group by semua kolom non-agregasi, termasuk yang dari subquery
-            ->groupBy('users.id', 'users.name', 'customers.id', 'total_pending_piutangs.total_piutang_per_user');
+                'customers.uuid as customer_uuid',
+                DB::raw('FORMAT(SUM(jumlah_piutang), 0) as total_piutang'),
+                DB::raw('FORMAT(SUM(sisa_piutang), 0) as sisa_piutang'),
+                DB::raw('FORMAT(SUM(CASE 
+                WHEN DATEDIFF(NOW(), tanggal_jatuh_tempo) <= 0 AND DATEDIFF(NOW(), tanggal_jatuh_tempo) >= -30
+                THEN jumlah_piutang ELSE 0 END), 0) as age_0_30'),
+                DB::raw('FORMAT(SUM(CASE 
+                WHEN DATEDIFF(NOW(), tanggal_jatuh_tempo) BETWEEN -60 AND -31
+                THEN jumlah_piutang ELSE 0 END), 0) as age_31_60'),
+                DB::raw('FORMAT(SUM(CASE 
+                WHEN DATEDIFF(NOW(), tanggal_jatuh_tempo) BETWEEN -90 AND -61
+                THEN jumlah_piutang ELSE 0 END), 0) as age_61_90'),
+                DB::raw('FORMAT(SUM(CASE 
+                WHEN DATEDIFF(NOW(), tanggal_jatuh_tempo) < -90 OR DATEDIFF(NOW(), tanggal_jatuh_tempo) > 0
+                THEN jumlah_piutang ELSE 0 END), 0) as age_90_plus'),
+            );
 
         if ($search) {
             $query->where('users.name', 'like', '%' . $search . '%');
         }
 
-        return $query->paginate($limit);
+        // Lanjutkan group & pagination
+        $data = $query
+            ->groupBy('users.id', 'users.name', 'customers.uuid')
+            ->paginate($limit);
+
+        return $data;
+
+
+        // ini tanggal_jatuh_tempo - tanggal_transaction
+        // $data = DB::query()
+        //         ->from('piutangs')
+        //         ->join('users', 'piutangs.user_id', '=', 'users.id')
+        //         ->join('customers', 'customers.user_id', '=', 'users.id')
+        //         ->select(
+        //             'users.id as user_id',
+        //             'users.name as user_name',
+        //             'customers.uuid as customer_uuid',
+        //             DB::raw('FORMAT(SUM(jumlah_piutang), 0) as total_piutang'),
+        //             DB::raw('FORMAT(SUM(sisa_piutang), 0) as sisa_piutang'),
+        //             DB::raw('FORMAT(SUM(CASE 
+        //         WHEN DATEDIFF(tanggal_jatuh_tempo, tanggal_transaction) BETWEEN 0 AND 30 
+        //         THEN jumlah_piutang ELSE 0 END), 0) as age_0_30'),
+        //             DB::raw('FORMAT(SUM(CASE 
+        //         WHEN DATEDIFF(tanggal_jatuh_tempo, tanggal_transaction) BETWEEN 31 AND 60 
+        //         THEN jumlah_piutang ELSE 0 END), 0) as age_31_60'),
+        //             DB::raw('FORMAT(SUM(CASE 
+        //         WHEN DATEDIFF(tanggal_jatuh_tempo, tanggal_transaction) BETWEEN 61 AND 90 
+        //         THEN jumlah_piutang ELSE 0 END), 0) as age_61_90'),
+        //             DB::raw('FORMAT(SUM(CASE 
+        //         WHEN DATEDIFF(tanggal_jatuh_tempo, tanggal_transaction) > 90 
+        //         THEN jumlah_piutang ELSE 0 END), 0) as age_90_plus'),
+        //         )
+        //         ->groupBy('users.id', 'users.name', 'customers.uuid')
+        //         ->paginate(10);
+        //     return $data;
     }
 
     public function getPiutangCount()

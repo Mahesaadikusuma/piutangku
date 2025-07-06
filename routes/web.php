@@ -48,7 +48,7 @@ Route::get("/", HomePage::class)->name("home");
 
 Route::prefix('company')->middleware('auth', 'role:admin|company')->group(function () {
     Route::get("/dashboard", Dashboard::class)->name("dashboard");
-    Route::get("/dashboard/customer-age-piutang/{customer:id}", CustomerAgePiutangDetail::class)->name("company.customer-piutang");
+    Route::get("/dashboard/customer-age-piutang/{customer:uuid}", CustomerAgePiutangDetail::class)->name("company.customer-piutang");
     Route::group(['prefix' => 'transaction', 'as' => 'transaction.'], function () {
         Route::get("/", Transactions::class)->name("index");
         Route::get("/create", PaymentCreate::class)->name("create");

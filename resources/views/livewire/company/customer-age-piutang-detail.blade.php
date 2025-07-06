@@ -74,9 +74,9 @@
                         <td class="px-6 py-3 text-start text-xs font-medium text-gray-500  dark:text-neutral-400">
                             <div class="flex items-center gap-3">
                             @if ($piutang->products->count() === 0)
-                                <flux:button size="xs" :href="route('master-data.piutang.detail', $piutang->id)" variant="filled">Detail</flux:button>
+                                <flux:button size="xs" :href="route('master-data.piutang.detail', $piutang->uuid)" variant="filled">Detail</flux:button>
                             @else
-                                <flux:button size="xs" :href="route('master-data.piutang-product.detail', $piutang->id)" variant="filled">Detail</flux:button>
+                                <flux:button size="xs" :href="route('master-data.piutang-product.detail', $piutang->uuid)" variant="filled">Detail</flux:button>
                             @endif
                             </div>
                             

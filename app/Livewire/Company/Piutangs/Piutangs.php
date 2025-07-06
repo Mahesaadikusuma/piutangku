@@ -4,6 +4,7 @@ namespace App\Livewire\Company\Piutangs;
 
 use App\Exports\Piutangs\PiutangsExport;
 use App\Helpers\Helpers;
+use App\Models\Piutang;
 use App\Repository\Interface\PiutangInterface;
 use App\Repository\PiutangRepository;
 use Carbon\Carbon;
@@ -134,6 +135,23 @@ class Piutangs extends Component
             session()->flash('error', 'PDF export failed.');
             return back();
         }
+    }
+
+    public function downloadPdfById($id)
+    {
+        $piutang = Piutang::with(['products', 'user', 'transactions'])->findOrFail($id);
+
+        $now = Carbon::now();
+
+        $pdf = Pdf::loadView('pdf.piutang-product-user', [
+            'piutang' => $piutang,
+            'now' => $now,
+        ]);
+
+
+        return response()->streamDownload(function () use ($pdf) {
+            echo  $pdf->stream();
+        }, 'piutang-detail.pdf');
     }
 
     public function delete($id)

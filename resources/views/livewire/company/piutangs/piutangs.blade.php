@@ -174,6 +174,7 @@
                             </td>    
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
+                                    <flux:button size="sm" icon='arrow-down-tray' wire:click='downloadPdfById({{ $piutang->id }})' variant="filled" class="cursor-pointer">Pdf</flux:button>
                                     <flux:button size="sm" :href="route('master-data.piutang.edit', $piutang->uuid)" variant="ghost" class="cursor-pointer">Edit</flux:button>
                                     <flux:button :href="route('master-data.piutang.detail', $piutang->uuid)" variant="filled">Detail</flux:button>
                                     @if ($piutang->status_pembayaran != App\Enums\StatusType::SUCCESS->value)

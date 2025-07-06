@@ -179,53 +179,8 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Card -->
-            <div class="p-4 md:p-5 min-h-102.5 flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl dark:bg-neutral-800 dark:border-neutral-700">
-
-                {{-- <flux:dropdown>
-                    <flux:button icon:trailing="chevron-down">Options</flux:button>
-
-                    <flux:menu>
-                        <flux:menu.submenu heading="Years">
-                            <flux:select size="sm" wire:model.lazy="years"  placeholder="Pilih Tahun..." >
-                                @foreach ($getYears as $year)
-                                    <flux:select.option :value="$year">{{ $year }}</flux:select.option>
-                                @endforeach
-                            </flux:select>
-                        </flux:menu.submenu>
-
-                        <flux:menu.separator />
-
-                        <flux:menu.item variant="danger" icon="trash">Delete</flux:menu.item>
-                    </flux:menu>
-                </flux:dropdown>
-                <!-- Header -->
-                <div class="flex flex-wrap justify-between items-center gap-2">
-                <div>
-                    <h2 class="text-sm text-gray-500 dark:text-neutral-500">
-                    Income
-                    </h2>
-                    <p class="text-xl sm:text-2xl font-medium text-gray-800 dark:text-neutral-200">
-                    $126,238.49
-                    </p>
-                </div>
-            
-                <div>
-                    <span class="py-[5px] px-1.5 inline-flex items-center gap-x-1 text-xs font-medium rounded-md bg-teal-100 text-teal-800 dark:bg-teal-500/10 dark:text-teal-500">
-                    <svg class="inline-block size-3.5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
-                    25%
-                    </span>
-                </div>
-                </div> --}}
-                <!-- End Header -->
-            
-                <div id="chart-month"></div>
-                {{-- <x-apex-charts
-                    :chart-id="'chart-month'"
-                    :series-data="$totalPiutangByMonth"
-                    :categories="$month"
-                    :series-name="'Total Piutang'"
-                /> --}}
-
+            <div class="p-4 md:p-5 min-h-102.5 flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl dark:bg-neutral-800 dark:border-neutral-700 ">
+                <div class="" id="chart-month"></div>
             </div>
             <!-- End Card -->
         </div>
@@ -233,7 +188,7 @@
         <div class="p-4 bg-white dark:bg-neutral-900 shadow-xl rounded-xl sm:p-7">
             <flux:heading>Customer Piutang</flux:heading>
             <flux:text class="mb-2">Customer Age Piutang.</flux:text>
-            <div class="border border-gray-200 rounded-lg overflow-hidden dark:border-neutral-700">
+            <div class="border border-gray-200 rounded-lg overflow-auto dark:border-neutral-700">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
                     <thead class="bg-gray-50 dark:bg-neutral-700">
                         <tr>
@@ -246,6 +201,9 @@
                             <th scope="col"
                                 class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-400">
                                 Total Piutang</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-400">
+                                Sisa Piutang</th>
                             <th scope="col"
                                 class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-400">
                                 Umur 0-30 Hari</th>
@@ -276,27 +234,31 @@
                             </td>
                             <td
                                 class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
-                                {{ number_format($customer->total_piutang) }}
+                                {{ $customer->total_piutang }}
                             </td>
                             <td
                                 class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
-                                {{ number_format($customer->age_0_30) }}
+                                {{ $customer->sisa_piutang }}
                             </td>
                             <td
                                 class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
-                                {{ number_format($customer->age_31_60) }}
+                                {{ $customer->age_0_30 }}
                             </td>
                             <td
                                 class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
-                                {{ number_format($customer->age_61_90) }}
+                                {{ $customer->age_31_60 }}
                             </td>
                             <td
                                 class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
-                                {{ number_format($customer->age_90_plus) }}
+                                {{ $customer->age_61_90 }}
                             </td>
                             <td
                                 class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
-                                <flux:button :href="route('company.customer-piutang', $customer->customer_id)">
+                                {{ $customer->age_90_plus }}
+                            </td>
+                            <td
+                                class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
+                                <flux:button :href="route('company.customer-piutang', $customer->customer_uuid)">
                                     Detail
                                 </flux:button>
                             </td>

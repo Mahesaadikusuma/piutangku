@@ -11,6 +11,8 @@ use Illuminate\Support\Number;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Layout;
 use App\Service\DashboardService;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 #[Layout('components.layouts.app')]
 #[Title('Dashboard')]

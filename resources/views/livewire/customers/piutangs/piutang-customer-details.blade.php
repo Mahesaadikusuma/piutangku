@@ -7,6 +7,13 @@
         <flux:breadcrumbs.item>Piutang Details</flux:breadcrumbs.item>
     </flux:breadcrumbs>
 
+    @if ($piutang->agreement && $piutang->agreement->generated_pdf)
+    <flux:button class="my-2" :href="Storage::url($piutang->agreement->generated_pdf)" variant="primary">
+        Download Mou
+    </flux:button>
+    
+    @endif
+
     <div class="p-4 bg-white dark:bg-neutral-900 shadow-xl rounded-xl sm:p-7">
         <flux:heading level="2" size="lg">Customer {{ $fullName }} - {{ $piutang->user->customer->code_customer }}</flux:heading>
         <div class="flex flex-col gap-5">
@@ -215,5 +222,10 @@
                 </table>
             </div>
         </div>
+
+        @if ($piutang->agreement && $piutang->agreement->generated_pdf)
+            <flux:heading class="mt-2">Preview Document</flux:heading>
+            <iframe src="{{ Storage::url($piutang->agreement->generated_pdf) }}" class="my-2" height="500" width="500" title="Iframe Example"></iframe>
+        @endif
     </div>
 </div>

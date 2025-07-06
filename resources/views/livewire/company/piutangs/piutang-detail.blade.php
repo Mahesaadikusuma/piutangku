@@ -206,5 +206,10 @@
                 </table>
             </div>
         </div>
+
+        @if ($piutang->agreement && $piutang->agreement->generated_pdf)
+            <flux:heading class="mt-2">Preview Document</flux:heading>
+            <iframe src="{{ Storage::url($piutang->agreement->generated_pdf) }}" class="my-2" height="500" width="500" title="Iframe Example"></iframe>
+        @endif
     </div>
 </div>

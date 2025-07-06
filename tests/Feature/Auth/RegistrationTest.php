@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Auth\Register;
+use App\Models\User;
 use Livewire\Livewire;
 
 test('registration screen can be rendered', function () {
@@ -17,9 +18,14 @@ test('new users can register', function () {
         ->set('password_confirmation', 'password')
         ->call('register');
 
+    $user = User::where('email', 'test@example.com')->first();
+
+    expect($user)->not->toBeNull();
+    expect($user->hasRole('customer'))->toBeTrue(); // ✅ Role benar
+
     $response
         ->assertHasNoErrors()
-        ->assertRedirect(route('dashboard', absolute: false));
+        ->assertRedirect(route('dashboard-customer', absolute: false));
 
     $this->assertAuthenticated();
 });

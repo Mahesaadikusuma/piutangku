@@ -10,8 +10,40 @@ test('login screen can be rendered', function () {
     $response->assertStatus(200);
 });
 
-test('users can authenticate using the login screen', function () {
+// test('users can authenticate using the login screen', function () {
+//     $user = User::factory()->create();
+
+//     $response = Livewire::test(Login::class)
+//         ->set('email', $user->email)
+//         ->set('password', 'password')
+//         ->call('login');
+
+//     $response
+//         ->assertHasNoErrors()
+//         ->assertRedirect(route('dashboard', absolute: false));
+
+//     $this->assertAuthenticated();
+// });
+
+test('customer users are redirected to dashboard-customer', function () {
     $user = User::factory()->create();
+    $user->assignRole('customer'); // pakai spatie role
+
+    $response = Livewire::test(Login::class)
+        ->set('email', $user->email)
+        ->set('password', 'password')
+        ->call('login');
+
+    $response
+        ->assertHasNoErrors()
+        ->assertRedirect(route('dashboard-customer', absolute: false));
+
+    $this->assertAuthenticatedAs();
+});
+
+test('admin or company users are redirected to dashboard', function () {
+    $user = User::factory()->create();
+    $user->assignRole('admin'); // atau 'company'
 
     $response = Livewire::test(Login::class)
         ->set('email', $user->email)
@@ -22,8 +54,9 @@ test('users can authenticate using the login screen', function () {
         ->assertHasNoErrors()
         ->assertRedirect(route('dashboard', absolute: false));
 
-    $this->assertAuthenticated();
+    $this->assertAuthenticatedAs();
 });
+
 
 test('users can not authenticate with invalid password', function () {
     $user = User::factory()->create();
