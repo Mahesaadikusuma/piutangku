@@ -7,12 +7,18 @@ use App\Models\Category;
 use App\Repository\Interface\CategoryInterface;
 use Illuminate\Support\Facades\Storage;
 use Masmerise\Toaster\Toaster;
+use Illuminate\Support\Facades\Cache;
 
 class CategoryRepository implements CategoryInterface
 {
+    protected $seconds = 3600;
+    protected $keyCache = 'category';
+
     public function getAll()
     {
-        return Category::all();
+        return cache()->remember($this->keyCache, $this->seconds, function () {
+            return Category::select('id', 'name')->get();
+        });
     }
 
     public function getFilteredQuery($search = null, $sortBy = 'newest')
@@ -42,7 +48,9 @@ class CategoryRepository implements CategoryInterface
 
     public function createCategory(array $data): Category
     {
-        return Category::create($data);
+        $categoryCreate = Category::create($data);
+        Cache::forget($this->keyCache);
+        return $categoryCreate;
     }
 
     public function updateCategory($data, $category): Category
@@ -55,7 +63,7 @@ class CategoryRepository implements CategoryInterface
             $data['thumbnail'] = $data['thumbnail']->storeAs('category/thumbnail', $data['thumbnail']->hashName(), 'public');
         }
         $category->update($data);
-
+        Cache::forget($this->keyCache);
         return $category;
     }
 
@@ -65,7 +73,7 @@ class CategoryRepository implements CategoryInterface
         if ($categoryId->thumbnail && Storage::disk('public')->exists($categoryId->thumbnail)) {
             Storage::disk('public')->delete($categoryId->thumbnail);
         }
-
+        Cache::forget($this->keyCache);
         return $categoryId->delete();
     }
 }

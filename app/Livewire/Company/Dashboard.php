@@ -27,6 +27,7 @@ class Dashboard extends Component
     public $limit = 20;
 
     public $years = null;
+    public $status = 'Pending';
 
     public $totalPiutangByMonth;
     public $month;
@@ -41,25 +42,18 @@ class Dashboard extends Component
     public function getTotalPiutangPerMonth(): array
     {
         $raw = Piutang::query()
-            ->selectRaw('MONTH(created_at) as month, SUM(jumlah_piutang) as total')
-            ->when($this->years, fn($q) => $q->whereYear('created_at', $this->years)) // ⬅️ pindah ke atas
-            ->groupByRaw('MONTH(created_at)')
-            ->orderByRaw('MONTH(created_at)')
+            ->selectRaw('MONTH(tanggal_transaction) as month, SUM(jumlah_piutang) as total')
+            // ->when($this->years, fn($q) => $q->whereYear('tanggal_transaction', $this->years)) // ⬅️ pindah ke atas
+            ->when($this->status !== '', fn($q) => $q->where('status_pembayaran', $this->status))
+            ->groupByRaw('MONTH(tanggal_transaction)')
+            ->orderByRaw('MONTH(tanggal_transaction)')
             ->pluck('total', 'month')
             ->toArray();
-
         // Isi default semua bulan 0
         $data = [];
-        // foreach (range(1, 12) as $month) {
-        //     $data = $raw[$month] ?? 0;
-        //     // $data[] = Number::abbreviate($jumlah, precision: 10);
-        // }
-
-
         foreach (range(1, 12) as $month) {
             $data[] = $raw[$month] ?? 0;
         }
-
         return $data;
     }
 
@@ -73,13 +67,11 @@ class Dashboard extends Component
         $data = $this->dashboardService->DashboardAnalytics();
         $ageCustomer = $this->dashboardService->agePiutangCustomer($this->limit, $this->search);
 
-        // $getMonths = array_values(Helpers::getMonths());
         $this->month = array_values(Helpers::getMonths());
         $getYears = Helpers::getYears();
         $this->totalPiutangByMonth = $this->getTotalPiutangPerMonth();
-
         $this->dispatch('filter', [
-            'dateTime' => $this->totalPiutangByMonth,
+            'dateTime' => $this->month,
             'orders' => $this->totalPiutangByMonth,
         ]);
 

@@ -130,64 +130,58 @@
             </thead>
             <tbody>
                 @forelse ($piutangs as $key => $piutang)
-                    @if ($piutang->products->count() === 0)
-                        <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200">
-                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                {{ $key + $piutangs->firstItem() }}
-                            </th>
-                            <td class="px-6 py-4">
-                                {{ $piutang->kode_piutang }}
-                            </td>    
-                            <td class="px-6 py-4">
-                                {{ $piutang->nomor_faktur }}
-                            </td>    
-                            <td class="px-6 py-4">
-                                {{ $piutang->nomor_order }}
-                            </td>    
-                            <td class="px-6 py-4">
-                                {{ $piutang->user->name }}
-                            </td>    
-                            <td class="px-6 py-4">
-                                {{ number_format($piutang->jumlah_piutang, '0') }}
-                            </td>    
-                            <td class="px-6 py-4">
-                                {{ Carbon\Carbon::parse($piutang->tanggal_transaction)->format('d M Y') }}
-                            </td>    
-                            <td class="px-6 py-4">
-                                {{ Carbon\Carbon::parse($piutang->tanggal_jatuh_tempo)->format('d M Y') }}
-                            </td>    
-                            <td class="px-6 py-4">
-                                @switch($piutang->status_pembayaran)
-                                    @case(App\Enums\StatusType::PENDING->value)
-                                    <flux:badge variant="solid" color="orange">{{ $piutang->status_pembayaran }}</flux:badge>
-                                        @break
-                                    @case(App\Enums\StatusType::SUCCESS->value)
-                                        <flux:badge variant="solid" color="green">{{ $piutang->status_pembayaran }}</flux:badge>
-                                        @break
+                <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200">
+                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        {{ $key + $piutangs->firstItem() }}
+                    </th>
+                    <td class="px-6 py-4">
+                        {{ $piutang->kode_piutang }}
+                    </td>    
+                    <td class="px-6 py-4">
+                        {{ $piutang->nomor_faktur }}
+                    </td>    
+                    <td class="px-6 py-4">
+                        {{ $piutang->nomor_order }}
+                    </td>    
+                    <td class="px-6 py-4">
+                        {{ $piutang->user->name }}
+                    </td>    
+                    <td class="px-6 py-4">
+                        {{ number_format($piutang->jumlah_piutang, '0') }}
+                    </td>    
+                    <td class="px-6 py-4">
+                        {{ Carbon\Carbon::parse($piutang->tanggal_transaction)->format('d M Y') }}
+                    </td>    
+                    <td class="px-6 py-4">
+                        {{ Carbon\Carbon::parse($piutang->tanggal_jatuh_tempo)->format('d M Y') }}
+                    </td>    
+                    <td class="px-6 py-4">
+                        @switch($piutang->status_pembayaran)
+                            @case(App\Enums\StatusType::PENDING->value)
+                            <flux:badge variant="solid" color="orange">{{ $piutang->status_pembayaran }}</flux:badge>
+                                @break
+                            @case(App\Enums\StatusType::SUCCESS->value)
+                                <flux:badge variant="solid" color="green">{{ $piutang->status_pembayaran }}</flux:badge>
+                                @break
 
-                                    @case(App\Enums\StatusType::FAILED->value)
-                                        <flux:badge variant="solid" color="red">{{ $piutang->status_pembayaran }}</flux:badge>
-                                        @break
-                                        @default
-                                    <flux:badge variant="solid" color="Blue">{{ $piutang->status_pembayaran }}</flux:badge>
-                                @endswitch 
-                            </td>    
-                            <td class="px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    <flux:button size="sm" icon='arrow-down-tray' wire:click='downloadPdfById({{ $piutang->id }})' variant="filled" class="cursor-pointer">Pdf</flux:button>
-                                    <flux:button size="sm" :href="route('master-data.piutang.edit', $piutang->uuid)" variant="ghost" class="cursor-pointer">Edit</flux:button>
-                                    <flux:button :href="route('master-data.piutang.detail', $piutang->uuid)" variant="filled">Detail</flux:button>
-                                    @if ($piutang->status_pembayaran != App\Enums\StatusType::SUCCESS->value)
-                                        <flux:button size="sm" variant="danger" class="cursor-pointer" wire:click="delete({{ $piutang->id }})">Delete</flux:button>
-                                    @endif
-                                </div>
-                            </td>
-                        </tr>
-                    @else 
-                    <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200">
-                        <td colspan="10" class="text-center text-gray-900 dark:text-white py-5">No Record Found</td>
-                    </tr>
-                    @endif                    
+                            @case(App\Enums\StatusType::FAILED->value)
+                                <flux:badge variant="solid" color="red">{{ $piutang->status_pembayaran }}</flux:badge>
+                                @break
+                                @default
+                            <flux:badge variant="solid" color="Blue">{{ $piutang->status_pembayaran }}</flux:badge>
+                        @endswitch 
+                    </td>    
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <flux:button size="sm" icon='arrow-down-tray' wire:click='downloadPdfById({{ $piutang->id }})' variant="filled" class="cursor-pointer">Pdf</flux:button>
+                            <flux:button size="sm" :href="route('master-data.piutang.edit', $piutang->uuid)" variant="ghost" class="cursor-pointer">Edit</flux:button>
+                            <flux:button :href="route('master-data.piutang.detail', $piutang->uuid)" variant="filled">Detail</flux:button>
+                            @if ($piutang->status_pembayaran != App\Enums\StatusType::SUCCESS->value)
+                                <flux:button size="sm" variant="danger" class="cursor-pointer" wire:click="delete({{ $piutang->id }})">Delete</flux:button>
+                            @endif
+                        </div>
+                    </td>
+                </tr>           
                 @empty
                     <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200">
                         <td colspan="10" class="text-center text-gray-900 dark:text-white py-5">No Record Found</td>

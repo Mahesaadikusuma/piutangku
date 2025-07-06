@@ -31,7 +31,7 @@ class ProductRepository implements ProductInterface
     public function getFilteredQuery($search = null, $categoryFilter = null, $sortBy = 'newest')
     {
         return Product::query()
-            ->with('category')
+            ->with(['category'])
             ->when($search, function ($query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%');
             })

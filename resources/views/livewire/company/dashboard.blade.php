@@ -27,15 +27,7 @@
                     </div>
                 </div>
 
-                {{-- <a class="py-3 px-4 md:px-5 inline-flex justify-between items-center text-sm text-gray-600 border-t border-gray-200 hover:bg-gray-50 focus:outline-hidden focus:bg-gray-50 rounded-b-xl dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
-                    href="#">
-                    View reports
-                    <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="m9 18 6-6-6-6" />
-                    </svg>
-                </a> --}}
+                
             </div>
             <!-- End Card -->
 
@@ -63,15 +55,7 @@
                     </div>
                 </div>
 
-                {{-- <a class="py-3 px-4 md:px-5 inline-flex justify-between items-center text-sm text-gray-600 border-t border-gray-200 hover:bg-gray-50 focus:outline-hidden focus:bg-gray-50 rounded-b-xl dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
-                    href="#">
-                    View reports
-                    <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="m9 18 6-6-6-6" />
-                    </svg>
-                </a> --}}
+                
             </div>
             <!-- End Card -->
 
@@ -100,15 +84,7 @@
                     </div>
                 </div>
 
-                {{-- <a class="py-3 px-4 md:px-5 inline-flex justify-between items-center text-sm text-gray-600 border-t border-gray-200 hover:bg-gray-50 focus:outline-hidden focus:bg-gray-50 rounded-b-xl dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
-                    href="#">
-                    View reports
-                    <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="m9 18 6-6-6-6" />
-                    </svg>
-                </a> --}}
+                
             </div>
             <!-- End Card -->
             <div
@@ -132,15 +108,7 @@
                     </div>
                 </div>
 
-                {{-- <a class="py-3 px-4 md:px-5 inline-flex justify-between items-center text-sm text-gray-600 border-t border-gray-200 hover:bg-gray-50 focus:outline-hidden focus:bg-gray-50 rounded-b-xl dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
-                    href="#">
-                    View reports
-                    <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="m9 18 6-6-6-6" />
-                    </svg>
-                </a> --}}
+                
             </div>
             <!-- End Card -->
             <div
@@ -164,15 +132,7 @@
                     </div>
                 </div>
 
-                {{-- <a class="py-3 px-4 md:px-5 inline-flex justify-between items-center text-sm text-gray-600 border-t border-gray-200 hover:bg-gray-50 focus:outline-hidden focus:bg-gray-50 rounded-b-xl dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
-                    href="#">
-                    View reports
-                    <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="m9 18 6-6-6-6" />
-                    </svg>
-                </a> --}}
+                
             </div>
             <!-- End Card -->
         </div>
@@ -180,6 +140,13 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Card -->
             <div class="p-4 md:p-5 min-h-102.5 flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl dark:bg-neutral-800 dark:border-neutral-700 ">
+                {{-- <div class="flex justify-center items-center gap-3 mb-4">
+                    <flux:radio.group wire:model.lazy="status" label="Status" variant="segmented" size="sm">
+                        <flux:radio label="Pending" value="Pending" />
+                        <flux:radio label="Success" value="Success" />
+                        <flux:radio label="Failed" value="Failed" />
+                    </flux:radio.group>
+                </div> --}}
                 <div class="" id="chart-month"></div>
             </div>
             <!-- End Card -->
@@ -280,14 +247,13 @@
     </div>
 </div>
 
-@push('scripts')
 @script
 <script>
     const chartData = @json($totalPiutangByMonth);
     const chartCategories = @json($month); // atau $getMonths
     const chartName = "Total Piutang";
 
-    console.log(chartData, chartCategories, chartName)
+    // console.log(chartData, chartCategories, chartName)
     function getChartOptions(data, categories, name = "Desktops") {
         return {
             series: [{
@@ -308,7 +274,7 @@
                 curve: 'straight'
             },
             title: {
-                text: 'Product Trends by Month',
+                text: 'Jumlah Piutang By Month',
                 align: 'left'
             },
             grid: {
@@ -319,22 +285,46 @@
             },
             xaxis: {
                 categories: categories
+            },
+            yaxis: {
+                labels: {
+                    formatter: function (val) {
+                        // Format dengan koma pemisah ribuan dan dua angka di belakang koma
+                        return parseFloat(val).toLocaleString('id-ID', {
+                            // minimumFractionDigits: 2,
+                            // maximumFractionDigits: 2
+                        });
+                    }
+                }
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return 'Rp ' + parseFloat(val).toLocaleString('id-ID', {
+                            // minimumFractionDigits: 2,
+                            // maximumFractionDigits: 2
+                        });
+                    }
+                }
             }
         };
     }
     const options = getChartOptions(chartData, chartCategories, chartName);
     const chart = new ApexCharts(document.querySelector("#chart-month"), options);
     chart.render();
-
-    Livewire.on('filter', (data) => {
-        console.log('DOM',document.querySelector("#chart-month"))
-        console.log(data)
-        chart.updateSeries([{
-            name: 'Orders',
-            data: data[0].orders,
-        }]);
-    })
+   
+    window.setTimeout(() => {
+        console.log(chart)
+        Livewire.on('filter', (data) => {
+            console.log("Jalan setiap 5 detik");
+            console.log(data)
+            chart.updateSeries([{
+                name: 'Orders',
+                data: data[0].orders,
+            }]);
+        })
+    }, 5000)
 </script>
 @endscript
-@endpush
+
 
