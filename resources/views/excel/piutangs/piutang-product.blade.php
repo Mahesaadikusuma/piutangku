@@ -1,4 +1,8 @@
 <x-layouts.export.pdf>
+    @php
+        $total_jumlah_piutang = $piutangs->sum('jumlah_piutang');
+        $total_sisa_piutang = $piutangs->sum('sisa_piutang');
+    @endphp
     <table id="table" style="width: 100%; border-collapse: collapse;">
         <thead>
             <tr>
@@ -49,17 +53,31 @@
                                 valign="center">
                                 {{ $piutang->tanggal_jatuh_tempo }}</td>
                             <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px;"
-                                valign="center">
+                                valign="center" align="right">
                                 {{ $piutang->jumlah_piutang }}</td>
                             <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px;"
-                                valign="center">
+                                valign="center" align="right">
                                 {{ $piutang->sisa_piutang }}</td>
                             <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px;"
                                 valign="center">
                                 {{ $piutang->terms }}</td>
-                            <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px;"
+                            {{-- <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px;"
                                 valign="center">
-                                {{ $piutang->status_pembayaran }}</td>
+                                {{ $piutang->status_pembayaran }}</td> --}}
+                            @switch($piutang->status_pembayaran)
+                                @case(App\Enums\StatusType::PENDING->value)
+                                <td rowspan="{{ $productCount }}" valign="center" style="border: 1px solid #000; padding: 5px; color: orange">{{ $piutang->status_pembayaran }}</td>
+                                    @break
+                                @case(App\Enums\StatusType::SUCCESS->value)
+                                    <td rowspan="{{ $productCount }}" valign="center" style="border: 1px solid #000; padding: 5px; color: green">{{ $piutang->status_pembayaran }}</td>
+                                    @break
+            
+                                @case(App\Enums\StatusType::FAILED->value)
+                                    <td rowspan="{{ $productCount }}" valign="center" style="border: 1px solid #000; padding: 5px; color: red">{{ $piutang->status_pembayaran }}</td>
+                                    @break
+                                @default
+                                <td rowspan="{{ $productCount }}" valign="center" style="border: 1px solid #000; padding: 5px; color: blue">{{ $piutang->status_pembayaran }}</td>
+                            @endswitch
                             <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px;"
                                 valign="center">
                                 {{ $piutang->tanggal_lunas ?? 'Belum Lunas' }}</td>
@@ -77,6 +95,19 @@
                     </tr>
                 @endforeach
             @endforeach
+
+            <tr>
+                <td valign="center" align="center" colspan="9" style="border: 1px solid #000; padding: 5px; text-align: right; font-weight: bold;">
+                    Grand Total
+                </td>
+                <td align="right" style="border: 1px solid #000; padding: 5px; font-weight: bold;">
+                    {{ number_format($total_jumlah_piutang, 0, ',', '.') }}
+                </td>
+                <td align="right" style="border: 1px solid #000; padding: 5px; font-weight: bold;">
+                    {{ number_format($total_sisa_piutang, 0, ',', '.') }}
+                </td>
+                <td colspan="4" style="border: 1px solid #000;"></td>
+            </tr>
         </tbody>
     </table>
 </x-layouts.export.pdf>
