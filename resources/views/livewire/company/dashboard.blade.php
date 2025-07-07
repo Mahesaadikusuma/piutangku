@@ -153,8 +153,22 @@
         </div>
 
         <div class="p-4 bg-white dark:bg-neutral-900 shadow-xl rounded-xl sm:p-7">
-            <flux:heading>Customer Piutang</flux:heading>
-            <flux:text class="mb-2">Customer Age Piutang.</flux:text>
+            <div class="flex justify-between">
+                <div class="flex flex-col">
+                    <flux:heading>Customer Piutang</flux:heading>   
+                    <flux:text class="mb-2">Customer Age Piutang.</flux:text>
+                </div>
+                <flux:dropdown>
+                    <flux:button icon:trailing="chevron-down">Options</flux:button>
+
+                    <flux:menu>
+                        <flux:menu.group heading="Export">
+                            <flux:menu.item icon="document-arrow-down" wire:click="downloadExcel" wire:loading.remove wire:loading.attr="disabled" class="cursor-pointer">Excel</flux:menu.item>
+                        </flux:menu.group>
+                    </flux:menu>
+                </flux:dropdown>
+            </div>
+            
             <div class="border border-gray-200 rounded-lg overflow-auto dark:border-neutral-700">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
                     <thead class="bg-gray-50 dark:bg-neutral-700">

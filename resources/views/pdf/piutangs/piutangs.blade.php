@@ -19,7 +19,7 @@
 
     .header {
         text-align: right;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
     }
 
     .content {
@@ -42,13 +42,20 @@
 </style>
 @endpush
 
-<x-layouts.export.pdf title="users">
+<x-layouts.export.pdf title="piutangs">
     <div class="logo">
         <img src="{{ public_path('images/logo.png') }}" alt="logo">
     </div>
 
     <div class="header">
-        {{ Carbon\Carbon::parse($now)->translatedFormat('d F Y')}}
+        <p>Tanggal Cetak {{ Carbon\Carbon::parse($now)->translatedFormat('d F Y')}}</p>
+        <p>Page: {{ $piutangs->currentPage()  }}</p>
+    </div>
+
+    <div class="" style="text-align: center;">
+        <h1>
+            DETAIL HISTORICAL PIUTANG CUSTOMER
+        </h1>
     </div>
 
     <div class="content">
@@ -69,13 +76,13 @@
                 </tr>
             </thead>
             <tbody>
-                @php $no = 1; @endphp
+                {{-- @php $no = 1; @endphp
                 @forelse ($piutangs as $piutang)
                     @php
                         $jumlahPpn = ($piutang->ppn ?? 0) * ($piutang->jumlah_piutang ?? 0) / 100;
                     @endphp
                     <tr>
-                        {{-- <td>{{ $no++ }}</td> --}}
+                        <td>{{ $no++ }}</td>
                         <td>{{ ($piutangs->currentPage() - 1) * $piutangs->perPage() + $loop->iteration }}</td>
                         <td>{{ $piutang->user->setting->full_name ?? '-' }}</td>
                         <td>{{ $piutang->kode_piutang }}</td>
@@ -107,10 +114,10 @@
                     <tr>
                         <td style="text-align: center;" colspan="11">No data found</td>
                     </tr>
-                @endforelse
+                @endforelse --}}
 
 
-                {{-- @php
+                @php
                     $grouped = $piutangs->groupBy(function($item) {
                         return $item->user->id;
                     });
@@ -137,7 +144,22 @@
                             <td>Rp {{ number_format($jumlahPpn, 0, ',', '.') }}</td>
                             <td>Rp {{ number_format($piutang->jumlah_piutang, 0, ',', '.') }}</td>
                             <td>Rp {{ number_format($piutang->sisa_piutang, 0, ',', '.') }}</td>
-                            <td>{{ ucfirst($piutang->status_pembayaran) }}</td>
+                            <td>
+                                @switch($piutang->status_pembayaran)
+                                    @case(App\Enums\StatusType::PENDING->value)
+                                    <span style="color: orange; font-weight: bold;">{{ $piutang->status_pembayaran }}</span>
+                                        @break
+                                    @case(App\Enums\StatusType::SUCCESS->value)
+                                        <span style="color: green; font-weight: bold;">{{ $piutang->status_pembayaran }}</span>
+                                        @break
+    
+                                    @case(App\Enums\StatusType::FAILED->value)
+                                        <span style="color: red; font-weight: bold;">{{ $piutang->status_pembayaran }}</span>
+                                        @break
+                                    @default
+                                    <span style="color: blue; font-weight: bold;">{{ $piutang->status_pembayaran }}</span>
+                                @endswitch
+                            </td>
                             <td>{{ $piutang->tanggal_lunas ? \Carbon\Carbon::parse($piutang->tanggal_lunas)->translatedFormat('d F Y') : '-' }}</td>
                         </tr>
                     @endforeach
@@ -146,7 +168,7 @@
                     <tr>
                         <td colspan="11">No data found</td>
                     </tr>
-                @endforelse --}}
+                @endforelse
 
             </tbody>
         </table>

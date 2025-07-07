@@ -53,8 +53,8 @@ class DashboardService
     }
 
 
-    public function agePiutangCustomer($limit = 10, $search)
+    public function agePiutangCustomer($limit = 25, $search)
     {
-        return $this->piutangRepository->agePiutangPerCustomer($limit, $search);
+        return $this->piutangRepository->agePiutangPerCustomerPaginate($limit, $search);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Company;
 
+use Carbon\Carbon;
 use App\Models\Piutang;
 use Livewire\Component;
 use App\Helpers\Helpers;
@@ -11,8 +12,11 @@ use Illuminate\Support\Number;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Layout;
 use App\Service\DashboardService;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\piutangs\AgeCustomerExport;
+use App\Repository\Interface\PiutangInterface;
 
 #[Layout('components.layouts.app')]
 #[Title('Dashboard')]
@@ -24,7 +28,7 @@ class Dashboard extends Component
     public $search = '';
 
     #[Url()]
-    public $limit = 20;
+    public $limit = 25;
 
     public $years = null;
     public $status = 'Pending';
@@ -34,9 +38,11 @@ class Dashboard extends Component
 
 
     protected DashboardService $dashboardService;
-    public function boot(DashboardService $dashboardService)
+    protected PiutangInterface $piutangInterface;
+    public function boot(DashboardService $dashboardService, PiutangInterface $piutangInterface)
     {
         $this->dashboardService = $dashboardService;
+        $this->piutangInterface = $piutangInterface;
     }
 
     public function getTotalPiutangPerMonth(): array
@@ -62,11 +68,31 @@ class Dashboard extends Component
         $this->reset(['years']);
     }
 
+    public function downloadExcel()
+    {
+        try {
+            $export = Excel::download(
+                new AgeCustomerExport(
+                    $this->piutangInterface,
+                    $this->search,
+                ),
+                'Age Piutangs.xlsx'
+            );
+
+            session()->flash('success', 'Excel exported successfully.');
+            return $export;
+        } catch (\Exception $e) {
+            Log::info("Error: " . $e->getMessage());
+            session()->flash('error', 'Excel export failed.');
+            return back();
+        }
+    }
+
     public function render()
     {
         $data = $this->dashboardService->DashboardAnalytics();
         $ageCustomer = $this->dashboardService->agePiutangCustomer($this->limit, $this->search);
-
+        // dd($ageCustomer);
         $this->month = array_values(Helpers::getMonths());
         $getYears = Helpers::getYears();
         $this->totalPiutangByMonth = $this->getTotalPiutangPerMonth();

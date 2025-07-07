@@ -40,6 +40,7 @@ class Piutangs extends Component
             'search' => ['as' => 'q',],
             'customerFilter' => ['except' => '', 'as' => 'customer'],
             'status' => ['except' => ''],
+            'perPage' => ['except' => '', 'as' => 'page'],
             'years' => ['except' => null, 'as' => 'year'],
             'months' => ['except' => null, 'as' => 'month'],
         ];

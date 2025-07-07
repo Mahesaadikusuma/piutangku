@@ -63,7 +63,8 @@ interface PiutangInterface
     public function generateKodePiutang(): string;
     public function createPiutang(array $data): Piutang;
     public function update(Piutang $piutang, array $data): bool;
-    public function agePiutangPerCustomer(int $limit = 10, ?string $search = null);
+    public function agePiutangPerCustomerQuery(?string $search = null);
+    public function agePiutangPerCustomerPaginate(int $limit = 25, $search = null);
     public function getPiutangCount();
     public function getPiutangCountByUser();
     public function getTotalPiutang();

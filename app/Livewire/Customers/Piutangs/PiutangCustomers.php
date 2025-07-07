@@ -82,7 +82,7 @@ class PiutangCustomers extends Component
             session()->flash('success', 'PDF exported successfully.');
             return response()->streamDownload(function () use ($pdf) {
                 echo  $pdf->stream();
-            }, 'users.pdf');
+            }, 'Piutangs.pdf');
         } catch (\Exception $e) {
             Log::info("Error: " . $e->getMessage());
             session()->flash('error', 'PDF export failed.');

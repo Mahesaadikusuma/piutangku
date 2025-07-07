@@ -202,7 +202,7 @@ class PiutangRepository implements PiutangInterface
         return $piutang->update($data);
     }
 
-    public function agePiutangPerCustomer(int $limit = 10, ?string $search = null)
+    public function agePiutangPerCustomerQuery(?string $search = null)
     {
         $query = DB::query()
             ->from('piutangs')
@@ -212,6 +212,7 @@ class PiutangRepository implements PiutangInterface
                 'users.id as user_id',
                 'users.name as user_name',
                 'customers.uuid as customer_uuid',
+                'customers.code_customer as code_customer',
                 DB::raw('FORMAT(SUM(jumlah_piutang), 0) as total_piutang'),
                 DB::raw('FORMAT(SUM(sisa_piutang), 0) as sisa_piutang'),
                 DB::raw('FORMAT(SUM(CASE 
@@ -232,12 +233,12 @@ class PiutangRepository implements PiutangInterface
             $query->where('users.name', 'like', '%' . $search . '%');
         }
 
-        // Lanjutkan group & pagination
-        $data = $query
-            ->groupBy('users.id', 'users.name', 'customers.uuid')
-            ->paginate($limit);
+        // // Lanjutkan group & pagination
+        // $data = $query
+        //     ->groupBy('users.id', 'users.name', 'customers.uuid')
+        //     ->paginate($limit);
 
-        return $data;
+        return $query;
 
 
         // ini tanggal_jatuh_tempo - tanggal_transaction
@@ -268,6 +269,12 @@ class PiutangRepository implements PiutangInterface
         //         ->paginate(10);
         //     return $data;
     }
+
+    public function agePiutangPerCustomerPaginate(int $limit = 25, $search = null)
+    {
+        return $this->agePiutangPerCustomerQuery($search)->groupBy('users.id', 'users.name', 'customers.uuid', 'customers.code_customer')->paginate($limit);
+    }
+
 
     public function getPiutangCount()
     {
