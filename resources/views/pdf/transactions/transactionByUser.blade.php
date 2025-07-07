@@ -1,233 +1,144 @@
 @push("styles")
 <style>
-    table {
-        width: 100%;
+    body {
+        font-family: DejaVu Sans, sans-serif;
+        font-size: 11px;
+        line-height: 1.6;
+        margin: 10px;
+    }
+
+    .logo {
+        text-align: center;
         margin-bottom: 10px;
     }
 
-    table th, table td {
-        padding: 6px;
-        font-size: 11px;
+    .logo img {
+        width: 50px;
+        height: 50px;
     }
 
-    table thead {
-        background-color: #f2f2f2;
+    .header {
+        text-align: right;
+        margin-bottom: 10px;
     }
 
-    .text-center {
+    .title {
+        font-size: 14px;
+        font-weight: bold;
         text-align: center;
     }
 
-    .text-right {
-        text-align: right;
+    .info-table {
+        border: none;
     }
 
-    h3 {
-        margin: 0;
-        font-size: 16px;
-    }
-
-    .address-block {
+    .info-table td {
+        /* padding: 3px 5px; */
         font-size: 11px;
-        line-height: 1.4;
-        margin-top: 5px;
-        white-space: normal;
+        border: none !important;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        table-layout: fixed;
+        word-wrap: break-word;
+    }
+
+    .table th,
+    .table td {
+        border: 1px solid #000;
+        padding: 4px;
+        text-align: left;
+        font-size: 11px;
         word-break: break-word;
+        white-space: normal;
     }
 
-    img {
-        margin-bottom: 10px;
+    .content {
+        margin-top: 10px;
     }
 
-    tfoot tr td {
+    .mt-4 {
+        margin-top: 10px;
+    }
+
+    .title .invoice h1 {
+        font-size: 20px;
         font-weight: bold;
-        font-size: x-small;
+        align-content: center;
     }
 
-    .gray {
-        background-color: lightgray;
+    .title .invoice {
+        border: 1px solid #000;
+    }
+
+    .page-break {
+        page-break-after: always;
     }
 </style>
 @endpush
 
-<x-layouts.pdf title="Transaction">
-    {{-- Header --}}
-    <table style="border: none">
-        <tr>
-            <td valign="top">
-                <img src="{{ public_path('images/logo.png') }}" alt="Logo" width="100" height="100" />
-            </td>
-            <td align="right">
-                <h3>{{ $transaction->piutang?->agreement?->leader_company ?? 'PT Tayoh Sarana Suksess' }}</h3>
-                <p>{{ $now }}</p>
-                <div class="address-block">
-                    {{ $transaction->piutang?->agreement?->borrower_company ?? 'Shinra Electric Power Company' }}<br>
-                    {{ $transaction->user?->setting?->address ?? 'Vila Mutiara Gading' }} <br>
-                    {{-- Kawasan Industri Menara Permai <br> JL. KM 23,88 Cileungsi Bogor 1680 Indonesia<br> --}}
-                    Tax ID<br>
-                    {{ $transaction->user?->setting?->phone_number ?? '08578213' }}<br>
-                    Fax
-                </div>
-            </td>
-        </tr>
-    </table>
+<x-layouts.export.pdf>
+    <div class="logo">
+        <img src="{{ public_path('images/logo.png') }}" alt="logo">
+    </div>
 
-    {{-- Table transaksi --}}
-    <table style="border-collapse: collapse;">
-        <thead>
-            <tr>
-                <th style="border: 1px solid #000;">#</th>
-                <th style="border: 1px solid #000;">Kode Transaksi</th>
-                <th style="border: 1px solid #000;">Kode Piutang</th>
-                <th style="border: 1px solid #000;">Total Piutang</th>
-                <th style="border: 1px solid #000;">Total Bayar</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse ($transaction->paymentPiutangs as $index => $payment)
-                <tr>
-                    <td style="border: 1px solid #000;" class="text-center">{{ $index + 1 }}</td>
-                    <td style="border: 1px solid #000;" class="text-center">{{ $transaction->kode }}</td>
-                    <td style="border: 1px solid #000;" class="text-center">{{ $transaction->piutang->kode_piutang ?? '-' }}</td>
-                    <td style="border: 1px solid #000;" class="text-right">Rp {{ number_format($payment->amount, 0, ',', '.') }}</td>
-                    <td style="border: 1px solid #000;" class="text-right">Rp {{ number_format($payment->amount, 0, ',', '.') }}</td>
-                </tr>
-            @empty
-                <tr>
-                    <td style="border: 1px solid #000;" class="text-center">1</td>
-                    <td style="border: 1px solid #000;" class="text-center">{{ $transaction->kode }}</td>
-                    <td style="border: 1px solid #000;" class="text-center">{{ $transaction->piutang->kode_piutang ?? '-' }}</td>
-                    <td style="border: 1px solid #000;" class="text-right">Rp {{ number_format($transaction->transaction_total, 0, ',', '.') }}</td>
-                    <td style="border: 1px solid #000;" class="text-right">Rp {{ number_format($transaction->transaction_total, 0, ',', '.') }}</td>
-                </tr>
-            @endforelse
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="3"></td>
-                <td class="text-right">Subtotal</td>
-                <td class="text-right">Rp {{ number_format($subtotal, 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td colspan="3"></td>
-                <td class="text-right">PPN ({{ $ppnPersen }}%)</td>
-                <td class="text-right">Rp {{ number_format($tax, 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td colspan="3"></td>
-                <td style="border: 1px solid #000; font-weight: bold" class="text-right gray"><strong>Total</strong></td>
-                <td style="border: 1px solid #000; font-weight: bold" class="text-right gray"><strong>Rp {{ number_format($total, 0, ',', '.') }}</strong></td>
-            </tr>
-        </tfoot>
-    </table>
-</x-layouts.pdf>
+    <div style="">
+        <div class="title">
+            <div class="invoice">
+                <h1>No Transaction <br>
+                    NO : {{ $transaction->kode }}</h1>
+            </div>
+        </div>
+    
+        <div class="content">
+                <h1 style="font-weight: bold; font-size: 15px;">
+                    Transaction Piutangs
+                </h1>
+                <table class="table mt-4">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Customer Name</th>
+                            <th>Kode Transaksi</th>
+                            <th>Kode Piutang</th>
+                            <th>Total Piutang</th>
+                            <th>Total Bayar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($transaction->paymentPiutangs as $index => $payment)
+                        <tr>
+                            <td scope="row">{{ $index + 1 }}</td>
+                            <td scope="row">{{ $transaction?->user?->setting->full_name }}</td>
+                            <td align="right">{{ $transaction->kode }}</td>
+                            <td align="right">{{ $transaction->piutang->kode_piutang ?? '-' }}</td>
+                            <td align="right">Rp {{ number_format($payment->amount, 0, ',', '.') }}</td>
+                            <td align="right">Rp {{ number_format($payment->amount, 0, ',', '.') }}</td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td scope="row">1</td>
+                            <td scope="row">{{ $transaction?->user?->setting->full_name }}</td>
+                            <td align="right">{{ $transaction->kode }}</td>
+                            <td align="right">{{ $transaction->piutang->kode_piutang }}</td>
+                            <td align="right">Rp {{ number_format($transaction->transaction_total, 0, ',', '.') }}</td>
+                            <td align="right">Rp {{ number_format($transaction->transaction_total, 0, ',', '.') }}</td>
+                        </tr>
+                        @endforelse
 
-
-{{-- @push("styles")
-<style>
-    * {
-        font-family: Verdana, Arial, sans-serif;
-    }
-
-    table {
-        font-size: x-small;
-    }
-
-    tfoot tr td {
-        font-weight: bold;
-        font-size: x-small;
-    }
-
-    .gray {
-        background-color: lightgray
-    }
-</style>
-@endpush
-<x-layouts.pdf title="Transaction">
-    <table width="100%">
-        <tr>
-            <td valign="top"><img src="{{ public_path('images/logo.png') }}" alt="" width="100" height="100" /></td>
-            <td align="right">
-                <h3>{{ $transaction->piutang?->agreement?->leader_company ?? 'PT Tayoh Sarana Suksess' }}</h3>
-                <p>{{$now}}</p>
-                <pre>
-                    {{ $transaction->piutang?->agreement?->borrower_company ?? 'Shinra Electric power company' }}
-                    {{ $transaction->user?->setting?->full_name ?? 'Vila Mutiara Gading' }}
-                    Tax ID
-                    {{ $transaction->user?->setting?->phone_number ?? '08578213' }}
-                    fax
-                </pre>
-            </td>
-        </tr>
-
-    </table>
-
-
-    <table width="100%">
-        <thead style="background-color: lightgray;">
-            <tr>
-                <th>#</th>
-                <th>Kode Transaksi</th>
-                <th>Kode Piutang</th>
-                <th>Total Piutang</th>
-                <th>Total Bayar</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse ($transaction->paymentPiutangs as $index => $payment)
-            <tr>
-                <td scope="row">{{ $index + 1 }}</td>
-                <td align="right">{{ $transaction->kode }}</td>
-                <td align="right">{{ $transaction->piutang->kode_piutang ?? '-' }}</td>
-                <td align="right">Rp {{ number_format($payment->amount, 0, ',', '.') }}</td>
-                <td align="right">Rp {{ number_format($payment->amount, 0, ',', '.') }}</td>
-            </tr>
-            @empty
-                <tr>
-                    <td scope="row">1</td>
-                    <td align="right">{{ $transaction->kode }}</td>
-                    <td align="right">{{ $transaction->piutang->kode_piutang }}</td>
-                    <td align="right">Rp {{ number_format($transaction->transaction_total, 0, ',', '.') }}</td>
-                    <td align="right">Rp {{ number_format($transaction->transaction_total, 0, ',', '.') }}</td>
-                </tr>
-            @endforelse
-        </tbody>
-
-         <tfoot>
-            <tr>
-                <td colspan="3"></td>
-                <td align="right">Subtotal $</td>
-                <td align="right">1635.00</td>
-            </tr>
-            <tr>
-                <td colspan="3"></td>
-                <td align="right">Tax $</td>
-                <td align="right">294.3</td>
-            </tr>
-            <tr>
-                <td colspan="3"></td>
-                <td align="right">Total $</td>
-                <td align="right" class="gray">$ 1929.3</td>
-            </tr>
-        </tfoot> 
-
-        <tfoot>
-            <tr>
-                <td colspan="3"></td>
-                <td align="right">Subtotal</td>
-                <td align="right">Rp {{ number_format($subtotal, 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td colspan="3"></td>
-                <td align="right">PPN ({{ $ppnPersen }}%)</td>
-                <td align="right">Rp {{ number_format($tax, 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td colspan="3"></td>
-                <td align="right" class="gray">Total</td>
-                <td align="right" class="gray">Rp {{ number_format($total, 0, ',', '.') }}</td>
-            </tr>
-        </tfoot>
-        
-    </table>
-</x-layouts.pdf> --}}
+                        <tr>
+                            <td colspan="5" align="right" style="padding: 5px; font-weight: bold;">SubTotal</td>
+                            <td align="right" style="padding: 5px; font-weight: bold;">
+                                {{ number_format($transaction->transaction_total, 0, ',', '.') }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            <p style="text-align: center; text-transform: uppercase; text-decoration: underline; font-weight: bold;">Phone : (021) 82610092, 82610093, 82610094</p>
+            <div class="page-break"></div>
+        </div>
+    </div>
+</x-layouts.export.pdf>

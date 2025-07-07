@@ -9,7 +9,7 @@
 
     .logo {
         text-align: center;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
     }
 
     .logo img {
@@ -19,30 +19,35 @@
 
     .header {
         text-align: right;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
     }
 
     .title {
         font-size: 14px;
         font-weight: bold;
         text-align: center;
-        margin-top: 10px;
+    }
+
+    .info-table {
+        border: none;
     }
 
     .info-table td {
-        padding: 3px 5px;
+        /* padding: 3px 5px; */
         font-size: 11px;
+        border: none !important;
     }
 
     .table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 20px;
+        margin-top: 10px;
         table-layout: fixed;
         word-wrap: break-word;
     }
 
-    .table th, .table td {
+    .table th,
+    .table td {
         border: 1px solid #000;
         padding: 4px;
         text-align: left;
@@ -52,11 +57,21 @@
     }
 
     .content {
-        margin-top: 20px;
+        margin-top: 10px;
     }
 
     .mt-4 {
-        margin-top: 20px;
+        margin-top: 10px;
+    }
+
+    .title .invoice h1 {
+        font-size: 20px;
+        font-weight: bold;
+        align-content: center;
+    }
+
+    .title .invoice {
+        border: 1px solid #000;
     }
 
     .page-break {
@@ -66,173 +81,205 @@
 @endpush
 
 <x-layouts.export.pdf>
-      <div class="logo">
-          <img src="{{ public_path('images/logo.png') }}" alt="logo">
-      </div>
-  
-      <div class="header">
-          {{ \Carbon\Carbon::parse($now)->translatedFormat('d F Y') }}
-      </div>
-  
-      <div class="title">
-          LAPORAN PIUTANG CUSTOMER <br>
-          {{ $piutang?->user?->setting?->full_name ?? $piutang?->user?->name ?? '-' }}
-      </div>
-  
-      <div class="content">
-          <table class="info-table">
-              <tr><td style="width: 150px;">Tanggal Cetak</td><td style="width: 10px;">:</td><td>{{ \Carbon\Carbon::parse($now)->translatedFormat('d F Y') }}</td></tr>
-              <tr><td>Kode Piutang</td><td>:</td><td>{{ $piutang->kode_piutang }}</td></tr>
-              <tr><td>No Faktur</td><td>:</td><td>{{ $piutang->nomor_faktur }}</td></tr>
-              <tr><td>No Order</td><td>:</td><td>{{ $piutang->nomor_order }}</td></tr>
-              <tr><td>Tanggal Transaksi</td><td>:</td><td>{{ \Carbon\Carbon::parse($piutang->tanggal_transaction)->translatedFormat('d F Y') }}</td></tr>
-              <tr><td>Nama Customer</td><td>:</td><td>{{ $piutang->user->name }}</td></tr>
-              <tr>
-                  <td>Status</td>
-                  <td>:</td>
-                  <td>
-                        @switch($piutang->status_pembayaran)
-                              @case(App\Enums\StatusType::PENDING->value)
-                              <span style="color: orange">{{ $piutang->status_pembayaran }}</span>
-                        @break
-                              @case(App\Enums\StatusType::SUCCESS->value)
-                              <span style="color: green">{{ $piutang->status_pembayaran }}</span>
-                        @break
+    <div class="logo">
+        <img src="{{ public_path('images/logo.png') }}" alt="logo">
+    </div>
 
-                              @case(App\Enums\StatusType::FAILED->value)
-                              <span style="color: red">{{ $piutang->status_pembayaran }}</span>
-                              @break
-                        @default
-                        <span style="color: blue">{{ $piutang->status_pembayaran }}</span>
-                  @endswitch
-                  </td>
-            </tr>
-              <tr><td>Alamat</td><td>:</td><td>{{ $piutang->user->setting->address ?? '-' }}</td></tr>
-          </table>
-  
-          @if ($piutang->agreement)
-              <p>{{ $piutang->agreement->content }}</p>
-          @endif
-          {{-- <table class="table mt-4">
-              <thead>
-                  <tr>
-                      <th>No</th>
-                      <th>Produk</th>
-                      <th>Qty</th>
-                      <th>Harga</th>
-                      <th>Jumlah</th>
-                      <th>Total Piutang</th>
-                  </tr>
-              </thead>
-              <tbody>
-                  @php $rowspan = $piutang->products->count(); @endphp
-                  @foreach ($piutang->products as $index => $product)
-                      <tr>
-                          @if ($index === 0)
-                              <td rowspan="{{ $rowspan }}">1</td>
-                          @endif
-                          <td>{{ $product->name }}</td>
-                          <td>{{ $product->pivot->qty }}</td>
-                          <td>Rp {{ number_format($product->pivot->price, 0, ',', '.') }}</td>
-                          <td>Rp {{ number_format($product->pivot->qty * $product->pivot->price, 0, ',', '.') }}</td>
-                          @if ($index === 0)
-                              <td rowspan="{{ $rowspan }}">Rp {{ number_format($piutang->jumlah_piutang, 0, ',', '.') }}</td>
-                          @endif
-                      </tr>
-                  @endforeach
-              </tbody>
-          </table> --}}
-          <h1 style="text-align: center; font-weight: bold">
-            Piutang Details
-          </h1>
-          <table class="table mt-4">
-            <thead>
+    <div style="">
+        <div class="title">
+            <div class="invoice">
+                <h1>No Invoice <br>
+                    NO : {{ $piutang->kode_piutang }}</h1>
+            </div>
+    
+            <table style="width: 100%; margin-top: 10px;" class="table">
                 <tr>
-                    <th>Kode Piutang</th>
-                    <th>PPN</th>
-                    <th>Jumlah PPN</th>
-                    <th>Jumlah Piutang</th>
-                    <th>Sisa Piutang</th>
-                    <th>Jangka Waktu</th>
-                    <th>Tanggal Jatuh Tempo</th>
-
+                    <td style="width: 50%;">
+                        <table class="info-table">
+                            <tr>
+                                <td style="width: 100px;">To</td>
+                                <td style="width: 10px;">:</td>
+                                <td>    
+                                    {{ $piutang?->user?->setting?->full_name ?? $piutang?->user?->name ?? '-' }} <br>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 100px;">Address</td>
+                                <td style="width: 10px;">:</td>
+                                <td>
+                                    {{ $piutang?->user?->setting?->address ?? '-' }} <br>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td style="width: 50%; text-align: center;">
+                        <table class="info-table">
+                            <tr>
+                                <td style="width: 120px;">Date Transaction</td>
+                                <td style="width: 10px;">:</td>
+                                <td>
+                                    {{ \Carbon\Carbon::parse($piutang->tanggal_transaction)->translatedFormat('d F Y')}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 120px;">No Faktur</td>
+                                <td style="width: 10px;">:</td>
+                                <td>{{ $piutang->nomor_faktur ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 120px;">No Order</td>
+                                <td style="width: 10px;">:</td>
+                                <td>{{ $piutang->nomor_order ?? '-' }}</td>
+                            </tr>
+                        </table>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                @php
-                    $jumlahPpn = ($piutang->ppn ?? 0) * ($piutang->jumlah_piutang ?? 0) / 100;
-                @endphp
-                <tr>
-                    <td>{{ $piutang->kode_piutang }}</td>
-                    <td>{{ $piutang->ppn ?? 0 }}%</td>
-                    <td>Rp {{ number_format($jumlahPpn, 0, ',', '.') }}</td>
-                    <td>Rp {{ number_format($piutang->jumlah_piutang, 0, ',', '.') }}</td>
-                    <td>Rp {{ number_format($piutang->sisa_piutang, 0, ',', '.') }}</td>
-                    <td>{{ $piutang->terms }} Hari</td>
-                    <td>{{ \Carbon\Carbon::parse($piutang->tanggal_jatuh_tempo)->translatedFormat('d F Y') }}</td>
-                </tr>
-            </tbody>
-        </table>
-
-
-        @if ($piutang->products->count() > 0)
-            <h2>Piutang Products</h2>
-            <table class="table mt-4">
+            </table>
+        </div>
+    
+        <div class="content">
+            <h1 style="font-weight: bold; font-size: 15px;">
+                Piutang Details
+            </h1>
+    
+            <table class="table">
                 <thead>
                     <tr>
-                        <th>No</th>
-                        <th>Produk</th>
-                        <th>Qty</th>
-                        <th>Harga</th>
-                        <th>Jumlah</th>
-                        <th>Total Piutang</th>
+                        <th>Kode Piutang</th>
+                        <th>PPN</th>
+                        <th>Jumlah PPN</th>
+                        <th>Jumlah Piutang</th>
+                        <th>Sisa Piutang</th>
+                        <th>Jangka Waktu</th>
+                        <th>Tanggal Jatuh Tempo</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($piutang->products as $index => $product)
+                    @php
+                        $jumlahPpn = ($piutang->jumlah_piutang ?? 0) * ($piutang->ppn ?? 0) / (100 + ($piutang->ppn ?? 0));
+                    @endphp
                     <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td>{{ $product->name }}</td>
-                        <td>{{ $product->pivot->qty }}</td>
-                        <td>Rp {{ number_format($product->pivot->price, 0, ',', '.') }}</td>
-                        <td>Rp {{ number_format($product->pivot->qty * $product->pivot->price, 0, ',', '.') }}</td>
-                        <td>
-                            @if ($loop->last)
-                            Rp {{ number_format($piutang->jumlah_piutang, 0, ',', '.') }}
-                            @else
-                            -
-                            @endif
-                        </td>
+                        <td>{{ $piutang->kode_piutang }}</td>
+                        <td>{{ $piutang->ppn ?? 0 }}%</td>
+                        <td>Rp {{ number_format($jumlahPpn, 0, ',', '.') }}</td>
+                        <td>Rp {{ number_format($piutang->jumlah_piutang, 0, ',', '.') }}</td>
+                        <td>Rp {{ number_format($piutang->sisa_piutang, 0, ',', '.') }}</td>
+                        <td>{{ $piutang->terms }} Hari</td>
+                        <td>{{ \Carbon\Carbon::parse($piutang->tanggal_jatuh_tempo)->translatedFormat('d F Y') }}</td>
                     </tr>
-                    @endforeach
                 </tbody>
             </table>
-        @endif
-        
-        
-          
-  
-          @if ($piutang->agreement)
-              <table style="width: 100%; margin-top: 60px;">
-                  <tr>
-                      <td style="width: 50%; text-align: center;">
-                          Mengetahui,<br>
-                          <strong>{{ $piutang->agreement->borrower_company }}</strong><br><br><br><br>
-                          <strong>{{ $piutang->agreement->borrower_name }}</strong><br>
-                          {{ $piutang->agreement->borrower_position }}
-                      </td>
-                      <td style="width: 50%; text-align: center;">
-                          {{ \Carbon\Carbon::parse($piutang->agreement->agreement_date)->translatedFormat('d F Y')}}<br>
-                          <strong>{{ $piutang->agreement->leader_company }}</strong><br><br><br><br>
-                          <strong>{{ $piutang->agreement->leader_name }}</strong><br>
-                          {{ $piutang->agreement->leader_position }}
-                      </td>
-                  </tr>
-              </table>
-          @endif
-  
-          {{-- Page Break jika perlu --}}
-          <div class="page-break"></div>
-      </div>
-  </x-layouts.export.pdf>
-  
+    
+            @if ($piutang->products->count() > 0)
+                <h1 style="font-weight: bold; font-size: 15px;">
+                    Piutang Products
+                </h1>
+                <table class="table mt-4">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>No Item</th>
+                            <th>Produk / Description</th>
+                            <th>Qty</th>
+                            <th>Unit</th>
+                            <th>Unit Price (IDR)</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php
+                            $total = 0;
+                            foreach ($piutang->products as $product) {
+                                $total += $product->pivot->qty * $product->pivot->price;
+                            }
+                            $ppn = ($piutang->ppn ?? 0) * $total / 100;
+                        @endphp
+    
+                        @foreach ($piutang->products as $index => $product)
+                            @php
+                                $subTotal = $product->pivot->qty * $product->pivot->price;
+                            @endphp
+                            <tr>
+                                <td>{{ $index + 1 }}</td>
+                                <td>
+                                    <span>{{ $product->kode_product }}</span><br>
+                                    <span>{{ $product->description }}</span>
+                                </td>
+                                <td>{{ $product->name }}</td>
+                                <td>{{ $product->pivot->qty }}</td>
+                                <td>Pcs</td>
+                                <td>Rp {{ number_format($product->pivot->price, 0, ',', '.') }}</td>
+                                <td>Rp {{ number_format($subTotal, 0, ',', '.') }}</td>
+                            </tr>
+                        @endforeach
+    
+                        <tr>
+                            <td colspan="6" align="right" style="padding: 5px; font-weight: bold;">SubTotal</td>
+                            <td align="right" style="padding: 5px; font-weight: bold;">
+                                {{ number_format($total, 0, ',', '.') }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" align="right" style="padding: 5px; font-weight: bold;">PPN ({{ $piutang->ppn }}%)</td>
+                            <td align="right" style="padding: 5px; font-weight: bold;">
+                                {{ number_format($ppn, 0, ',', '.') }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" align="right" style="padding: 5px; font-weight: bold;">Total Amount</td>
+                            <td align="right" style="padding: 5px; font-weight: bold;">
+                                {{ number_format($piutang->jumlah_piutang, 0, ',', '.') }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            @endif
+
+            <h5>Please Remit Payment To</h5>
+            <table style="width: 100%; margin-top: 10px;" class="table">
+                <tr>
+                    <td style="width: 50%;">
+                        <table class="info-table">
+                            <tr>
+                                <td style="width: 100px;">Account Name</td>
+                                <td style="width: 10px;">:</td>
+                                <td>    
+                                    <span>PT TAYOH SARANA SUKSES</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 100px;">Bank</td>
+                                <td style="width: 10px;">:</td>
+                                <td>
+                                    <span>BCA A YANI - BEKASI</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 100px;">Account</td>
+                                <td style="width: 10px;">:</td>
+                                <td>
+                                    <span>066-3055001 (IDR)</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td style="width: 50%; text-align: center;">
+                        <table class="info-table" style="width: 100%;">
+                            <tr>
+                                <td style="text-align: center; padding-top: 30px;">
+                                    Best Regard<br>
+                                    <strong>{{ $piutang->agreement->leader_company ?? 'PT Tayoh Sarana Suksess Dummy' }}</strong><br><br><br><br>
+                                    <strong>{{ $piutang->agreement->leader_name ?? 'Muhammad Yani Dummy' }}</strong><br>
+                                    {{ $piutang->agreement->leader_position ?? 'Director Dummy' }}
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            
+            <p style="text-align: center; text-transform: uppercase; text-decoration: underline; font-weight: bold;">Phone : (021) 82610092, 82610093, 82610094</p>
+            <div class="page-break"></div>
+        </div>
+    </div>
+</x-layouts.export.pdf>

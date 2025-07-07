@@ -32,7 +32,6 @@ class Dashboard extends Component
 
     public $years = null;
     public $status = 'Pending';
-
     public $totalPiutangByMonth;
     public $month;
 
@@ -45,27 +44,66 @@ class Dashboard extends Component
         $this->piutangInterface = $piutangInterface;
     }
 
-    public function getTotalPiutangPerMonth(): array
+    protected function queryString()
+    {
+        return [
+            'status' => ['except' => ''],
+            'years' => ['except' => null],
+        ];
+    }
+
+    public function mount()
+    {
+        $this->month = array_values(Helpers::getMonths());
+        $this->getTotalPiutangPerMonth($this->status, $this->years);
+    }
+
+    public function updateChart()
+    {
+        $this->reset(['month', 'totalPiutangByMonth']);
+        $this->getTotalPiutangPerMonth($this->status, $this->years);
+
+        $this->dispatch('filter', [
+            'dateTime' => $this->month,
+            'orders' => $this->totalPiutangByMonth,
+            'colors' => $this->status == 'Failed' ? '#f53333' : ($this->status == 'Success' ? '#039e03' : '#FFA500'),
+        ]);
+    }
+
+
+    public function getTotalPiutangPerMonth($status = null, $years = null)
     {
         $raw = Piutang::query()
             ->selectRaw('MONTH(tanggal_transaction) as month, SUM(jumlah_piutang) as total')
-            // ->when($this->years, fn($q) => $q->whereYear('tanggal_transaction', $this->years)) // ⬅️ pindah ke atas
-            ->when($this->status !== '', fn($q) => $q->where('status_pembayaran', $this->status))
+            ->when($status !== '', fn($q) => $q->where('status_pembayaran', $status))
+            ->when($years, fn($q) => $q->whereYear('tanggal_transaction', $years))
             ->groupByRaw('MONTH(tanggal_transaction)')
             ->orderByRaw('MONTH(tanggal_transaction)')
             ->pluck('total', 'month')
             ->toArray();
-        // Isi default semua bulan 0
-        $data = [];
-        foreach (range(1, 12) as $month) {
-            $data[] = $raw[$month] ?? 0;
+
+        // Set 12 bulan dengan default 0
+        $this->totalPiutangByMonth = [];
+        foreach (range(1, 12) as $m) {
+            $this->totalPiutangByMonth[] = floor($raw[$m] ?? 0);
         }
-        return $data;
     }
 
     public function resetFilter()
     {
-        $this->reset(['years']);
+        $this->reset(['month', 'totalPiutangByMonth']);
+        $this->reset(['status', 'years']);
+
+        // Inisialisasi ulang bulan
+        $this->month = array_values(Helpers::getMonths());
+        // Ambil ulang data piutang
+        $this->getTotalPiutangPerMonth($this->status, $this->years);
+        // Dispatch ke chart
+        $this->dispatch('filter', [
+            'dateTime' => $this->month,
+            'orders' => $this->totalPiutangByMonth,
+            'colors' => $this->status == 'Failed' ? '#f53333' : ($this->status == 'Success' ? '#039e03' : '#FFA500'),
+        ]);
     }
 
     public function downloadExcel()
@@ -92,15 +130,11 @@ class Dashboard extends Component
     {
         $data = $this->dashboardService->DashboardAnalytics();
         $ageCustomer = $this->dashboardService->agePiutangCustomer($this->limit, $this->search);
-        // dd($ageCustomer);
-        $this->month = array_values(Helpers::getMonths());
         $getYears = Helpers::getYears();
-        $this->totalPiutangByMonth = $this->getTotalPiutangPerMonth();
-        $this->dispatch('filter', [
-            'dateTime' => $this->month,
-            'orders' => $this->totalPiutangByMonth,
-        ]);
 
+        // bisa dituker untuk melihat bulan
+        $this->month = array_values(Helpers::getMonths());
+        $this->updateChart();
         return view('livewire.company.dashboard', [
             'ageCustomer' => $ageCustomer,
             'data' => $data,

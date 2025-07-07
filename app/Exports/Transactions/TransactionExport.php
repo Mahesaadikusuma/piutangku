@@ -7,6 +7,7 @@ use App\Repository\TransactionRepository;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Log;
 
 class TransactionExport implements FromView, ShouldAutoSize
 {
@@ -49,6 +50,7 @@ class TransactionExport implements FromView, ShouldAutoSize
                 $this->months,
                 $this->sortBy
             );
+        Log::info("message", $transactions->toArray());
         return view('excel.transactions.transaction', [
             'transactions' => $transactions,
         ]);

@@ -1,11 +1,10 @@
 <x-layouts.export.pdf>
+    @php
+        $total_transaction = $transactions->sum('transaction_total');
+    @endphp
     <table id="table" style="width: 100%; border-collapse: collapse;">
         <thead>
             <tr>
-                {{-- @foreach (['#', 'Kode Piutang', 'Nomor Faktur', 'Nomor Order',  'User Name', 'Product Name', 'Quantity', 'Price', 'Tanggal Transaction', 'Tanggal Jatuh Tempo', 'Jumlah Piutang', 'Sisa Piutang','Jangka Waktu', 'Status', 'Tanggal Lunas',] as $header)
-                    <th style="border: 1px solid #000; background-color: yellow; color: black; padding: 5px;">
-                        {{ $header }}</th>
-                @endforeach --}}
                 @foreach (['#', 'Kode Transaksi', 'userName', 'kode piutang', 'Nomimal Pembayaran', 'Total Transaction', 'Status', 'Tanggal Transaction'] as $header)
                     <th style="border: 1px solid #000; background-color: yellow; color: black; padding: 5px;">
                         {{ $header }}</th>
@@ -18,7 +17,8 @@
                     $piutangCount = $transaction->paymentPiutangs->count();
                 @endphp
 
-                @foreach ($transaction->paymentPiutangs as $index => $payment)
+                @if ($piutangCount > 0)
+                    @foreach ($transaction->paymentPiutangs as $index => $payment)
                     <tr>
                         @if ($index === 0)
                             <td rowspan="{{ $piutangCount }}"
@@ -33,27 +33,89 @@
                                 {{ $transaction->user->setting->full_name }}</td>
                         @endif
 
-                        <td style="border: 1px solid #000; padding: 5px;" valign="center">
-                            {{$payment->piutang->kode_piutang }}
-                        </td>
-                        <td style="border: 1px solid #000; padding: 5px;" valign="center">
-                            {{ $payment->amount }}
+                        <td style="border: 1px solid #000; padding: 5px;" valign="center">{{ $payment->piutang->kode_piutang }}</td>
+                        <td style="border: 1px solid #000; padding: 5px;" valign="center">{{ $payment->amount }}
                         </td>
 
                         @if ($index === 0)
                             <td rowspan="{{ $piutangCount }}" style="border: 1px solid #000; padding: 5px;"
                                 valign="center">
                                 {{ $transaction->transaction_total }}</td>
+                            @switch($transaction->status)
+                                @case(App\Enums\StatusType::PENDING->value)
+                                <td rowspan="{{ $piutangCount }}" valign="center" style="border: 1px solid #000; padding: 5px; color: orange">{{ $transaction->status }}</td>
+                                    @break
+                                @case(App\Enums\StatusType::SUCCESS->value)
+                                    <td rowspan="{{ $piutangCount }}" valign="center" style="border: 1px solid #000; padding: 5px; color: green">{{ $transaction->status }}</td>
+                                    @break
+            
+                                @case(App\Enums\StatusType::FAILED->value)
+                                    <td rowspan="{{ $piutangCount }}" valign="center" style="border: 1px solid #000; padding: 5px; color: red">{{ $transaction->status }}</td>
+                                    @break
+                                @default
+                                <td rowspan="{{ $piutangCount }}" valign="center" style="border: 1px solid #000; padding: 5px; color: blue">{{ $transaction->status }}</td>
+                            @endswitch
+
                             <td rowspan="{{ $piutangCount }}" style="border: 1px solid #000; padding: 5px;"
-                                valign="center">
-                                {{ $transaction->status }}</td>
-                            <td rowspan="{{ $piutangCount }}" style="border: 1px solid #000; padding: 5px;"
-                                valign="center">
+                                valign="center" align="right">
                                 {{ $transaction->created_at }}</td>
                         @endif
                     </tr>
                 @endforeach
+
+                @else
+                    <tr>
+                        <td
+                            style="border: 1px solid #000; padding: 5px; text-align: center;" valign="center">
+                            {{ $key + 1 }}
+                        </td>
+                        <td style="border: 1px solid #000; padding: 5px;"
+                            valign="center">
+                            {{ $transaction->kode }}</td>
+                        <td style="border: 1px solid #000; padding: 5px;"
+                            valign="center">
+                            {{ $transaction->user->setting->full_name }}</td>
+
+                        <td style="border: 1px solid #000; padding: 5px;" valign="center">{{ $transaction->piutang->kode_piutang }}</td>
+                        <td style="border: 1px solid #000; padding: 5px;" valign="center">{{ $transaction->transaction_total }}
+                        </td>
+
+                        
+                        <td style="border: 1px solid #000; padding: 5px;"
+                            valign="center">
+                            {{ $transaction->transaction_total }}</td>
+                        @switch($transaction->status)
+                            @case(App\Enums\StatusType::PENDING->value)
+                            <td valign="center" style="border: 1px solid #000; padding: 5px; color: orange">{{ $transaction->status }}</td>
+                                @break
+                            @case(App\Enums\StatusType::SUCCESS->value)
+                                <td valign="center" style="border: 1px solid #000; padding: 5px; color: green">{{ $transaction->status }}</td>
+                                @break
+        
+                            @case(App\Enums\StatusType::FAILED->value)
+                                <td valign="center" style="border: 1px solid #000; padding: 5px; color: red">{{ $transaction->status }}</td>
+                                @break
+                            @default
+                            <td valign="center" style="border: 1px solid #000; padding: 5px; color: blue">{{ $transaction->status }}</td>
+                        @endswitch
+
+                        <td style="border: 1px solid #000; padding: 5px;"
+                            valign="center" align="right">
+                            {{ $transaction->created_at }}</td>
+                    </tr>
+                @endif
             @endforeach
+
+            <tr>
+                <td valign="center" align="center" colspan="5" style="border: 1px solid #000; padding: 5px; text-align: right; font-weight: bold;">
+                    Grand Total 
+                </td>
+                <td align="right" style="border: 1px solid #000; padding: 5px; font-weight: bold;">
+                    {{ number_format($total_transaction, 0, ',', '.') }}
+                </td>
+                
+                <td colspan="2" style="border: 1px solid #000;"></td>
+            </tr>
         </tbody>
     </table>
 </x-layouts.export.pdf>

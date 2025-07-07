@@ -65,7 +65,10 @@
                 </tr>
             </thead>
             <tbody>
-                @php $no = 1; @endphp
+                @php 
+                    $no = 1;
+                    $total_transaction = $transactions->sum('transaction_total');
+                @endphp
                 @forelse ($transactions as $transaction)
                     <tr>
                         {{-- <td>{{ $no++ }}</td> --}}
@@ -97,6 +100,15 @@
                         <td style="text-align: center;" colspan="11">No data found</td>
                     </tr>
                 @endforelse
+
+                <tr>
+                    <td colspan="5" style="border: 1px solid #000; padding: 5px; text-align: right; font-weight: bold; vertical-align: middle;">
+                        Grand Total
+                    </td>
+                    <td colspan="2" style="border: 1px solid #000; padding: 5px; text-align: right; font-weight: bold; vertical-align: middle;">
+                        Rp. {{ number_format($total_transaction, 0, ',', '.') }}
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>

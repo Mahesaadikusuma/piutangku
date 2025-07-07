@@ -76,52 +76,13 @@
                 </tr>
             </thead>
             <tbody>
-                {{-- @php $no = 1; @endphp
-                @forelse ($piutangs as $piutang)
-                    @php
-                        $jumlahPpn = ($piutang->ppn ?? 0) * ($piutang->jumlah_piutang ?? 0) / 100;
-                    @endphp
-                    <tr>
-                        <td>{{ $no++ }}</td>
-                        <td>{{ ($piutangs->currentPage() - 1) * $piutangs->perPage() + $loop->iteration }}</td>
-                        <td>{{ $piutang->user->setting->full_name ?? '-' }}</td>
-                        <td>{{ $piutang->kode_piutang }}</td>
-                        <td>{{ $piutang->nomor_faktur }}</td>
-                        <td>{{ $piutang->nomor_order }}</td>
-                        <td>{{ $piutang->ppn ?? 0 }}%</td>
-                        <td>Rp {{ number_format($jumlahPpn, 0, ',', '.') }}</td>
-                        <td>Rp {{ number_format($piutang->jumlah_piutang, 0, ',', '.') }}</td>
-                        <td>Rp {{ number_format($piutang->sisa_piutang, 0, ',', '.') }}</td>
-                        <td>
-                            @switch($piutang->status_pembayaran)
-                                @case(App\Enums\StatusType::PENDING->value)
-                                <span style="color: orange">{{ $piutang->status_pembayaran }}</span>
-                                    @break
-                                @case(App\Enums\StatusType::SUCCESS->value)
-                                    <span style="color: green">{{ $piutang->status_pembayaran }}</span>
-                                    @break
-
-                                @case(App\Enums\StatusType::FAILED->value)
-                                    <span style="color: red">{{ $piutang->status_pembayaran }}</span>
-                                    @break
-                                @default
-                                <span style="color: blue">{{ $piutang->status_pembayaran }}</span>
-                            @endswitch
-                        </td>
-                        <td>{{ $piutang->tanggal_lunas ? \Carbon\Carbon::parse($piutang->tanggal_lunas)->translatedFormat('d F Y') : '-' }}</td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td style="text-align: center;" colspan="11">No data found</td>
-                    </tr>
-                @endforelse --}}
-
-
                 @php
                     $grouped = $piutangs->groupBy(function($item) {
                         return $item->user->id;
                     });
                     $no = 1;
+                    $total_jumlah_piutang = $piutangs->sum('jumlah_piutang');
+                    $total_sisa_piutang = $piutangs->sum('sisa_piutang');
                 @endphp
 
                 @forelse ($grouped as $userId => $items)
@@ -131,7 +92,6 @@
                         @endphp
                         <tr>
                             <td>{{ $no }}</td>
-                            Simulasi Rowspan: tampilkan hanya di baris pertama
                             @if ($index === 0)
                                 <td>{{ $piutang->user->setting->full_name ?? '-' }}</td>
                             @else
@@ -152,7 +112,6 @@
                                     @case(App\Enums\StatusType::SUCCESS->value)
                                         <span style="color: green; font-weight: bold;">{{ $piutang->status_pembayaran }}</span>
                                         @break
-    
                                     @case(App\Enums\StatusType::FAILED->value)
                                         <span style="color: red; font-weight: bold;">{{ $piutang->status_pembayaran }}</span>
                                         @break
@@ -169,6 +128,19 @@
                         <td colspan="11">No data found</td>
                     </tr>
                 @endforelse
+
+                <tr>
+                    <td colspan="7" style="border: 1px solid #000; padding: 5px; text-align: right; font-weight: bold; vertical-align: middle;">
+                        Grand Total
+                    </td>
+                    <td style="border: 1px solid #000; padding: 5px; text-align: right; font-weight: bold; vertical-align: middle;">
+                        Rp. {{ number_format($total_jumlah_piutang, 0, ',', '.') }}
+                    </td>
+                    <td style="border: 1px solid #000; padding: 5px; text-align: right; font-weight: bold; vertical-align: middle;">
+                        Rp. {{ number_format($total_sisa_piutang, 0, ',', '.') }}
+                    </td>
+                    <td colspan="2" style="border: 1px solid #000;"></td>
+                </tr>
 
             </tbody>
         </table>

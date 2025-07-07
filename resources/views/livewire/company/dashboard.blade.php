@@ -140,13 +140,31 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Card -->
             <div class="p-4 md:p-5 min-h-102.5 flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl dark:bg-neutral-800 dark:border-neutral-700 ">
-                {{-- <div class="flex justify-center items-center gap-3 mb-4">
-                    <flux:radio.group wire:model.lazy="status" label="Status" variant="segmented" size="sm">
-                        <flux:radio label="Pending" value="Pending" />
-                        <flux:radio label="Success" value="Success" />
-                        <flux:radio label="Failed" value="Failed" />
-                    </flux:radio.group>
-                </div> --}}
+                <flux:dropdown class="mb-4">
+                    <flux:button type="button" icon:trailing="chevron-down">Filter</flux:button>
+                    <flux:menu>
+                        <flux:menu.submenu heading="Status">
+                            <flux:select size="sm" wire:model.lazy="status"  placeholder="Pilih Status..." >
+                                @foreach (\App\Enums\StatusType::cases() as $status)
+                                    <flux:select.option :value="$status->value">{{ $status->value }}</flux:select.option>
+                                @endforeach
+                            </flux:select>
+                        </flux:menu.submenu>
+
+                        <flux:menu.submenu heading="Years">
+                            <flux:select size="sm" wire:model.lazy="years"  placeholder="Pilih Tahun..." >
+                                @foreach ($getYears as $year)
+                                    <flux:select.option :value="$year">{{ $year }}</flux:select.option>
+                                @endforeach
+                            </flux:select>
+                        </flux:menu.submenu>
+
+                        <flux:menu.separator />
+
+                        <flux:menu.item wire:click="resetFilter"  variant="danger" icon="x-mark">Reset</flux:menu.item>
+                    </flux:menu>
+                </flux:dropdown>
+
                 <div class="" id="chart-month"></div>
             </div>
             <!-- End Card -->
@@ -263,15 +281,17 @@
 
 @script
 <script>
-    const chartData = @json($totalPiutangByMonth);
-    const chartCategories = @json($month); // atau $getMonths
-    const chartName = "Total Piutang";
+    const chartData = {!! json_encode($totalPiutangByMonth) !!};
+    
+    const chartCategories = {!! json_encode($month) !!};
+    console.log(chartCategories)
 
     // console.log(chartData, chartCategories, chartName)
-    function getChartOptions(data, categories, name = "Desktops") {
+    function getChartOptions(data, categories) {
         return {
+            colors: ['#FFA500'],
             series: [{
-                name: name,
+                name: 'Jumlah Piutang',
                 data: data
             }],
             chart: {
@@ -285,7 +305,7 @@
                 enabled: false
             },
             stroke: {
-                curve: 'straight'
+                curve: 'smooth'
             },
             title: {
                 text: 'Jumlah Piutang By Month',
@@ -303,42 +323,48 @@
             yaxis: {
                 labels: {
                     formatter: function (val) {
-                        // Format dengan koma pemisah ribuan dan dua angka di belakang koma
-                        return parseFloat(val).toLocaleString('id-ID', {
-                            // minimumFractionDigits: 2,
-                            // maximumFractionDigits: 2
-                        });
+                        return new Intl.NumberFormat('id-ID', {
+                                style: 'currency',
+                                currency: 'IDR',
+                                minimumFractionDigits: 0
+                        }).format(val);
                     }
                 }
             },
             tooltip: {
                 y: {
                     formatter: function (val) {
-                        return 'Rp ' + parseFloat(val).toLocaleString('id-ID', {
-                            // minimumFractionDigits: 2,
-                            // maximumFractionDigits: 2
-                        });
+                        return new Intl.NumberFormat('id-ID', {
+                                style: 'currency',
+                                currency: 'IDR',
+                                minimumFractionDigits: 0
+                        }).format(val);
                     }
                 }
             }
         };
     }
-    const options = getChartOptions(chartData, chartCategories, chartName);
+    const options = getChartOptions(chartData, chartCategories);
     const chart = new ApexCharts(document.querySelector("#chart-month"), options);
+
     chart.render();
-   
-    window.setTimeout(() => {
-        console.log(chart)
-        Livewire.on('filter', (data) => {
-            console.log("Jalan setiap 5 detik");
-            console.log(data)
+    Livewire.on('filter', (data) => {
+        setTimeout(() => {
+            console.log(data);
             chart.updateSeries([{
-                name: 'Orders',
+                name: 'Jumlah Piutang',
                 data: data[0].orders,
             }]);
-        })
-    }, 5000)
+
+            chart.updateOptions({
+                colors: [`${data[0].colors}`],
+            });
+        }, 300); // delay 300ms
+    });
 </script>
 @endscript
+
+
+
 
 
