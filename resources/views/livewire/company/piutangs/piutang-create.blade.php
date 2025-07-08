@@ -1,6 +1,6 @@
 <div>
-    <flux:heading level="1" size="xl">Customer</flux:heading>
-    <flux:subheading size="xl" class="">Manange Your Customer Create</flux:subheading>
+    <flux:heading level="1" size="xl">Piutangs</flux:heading>
+    <flux:subheading size="xl" class="">Manange Your Piutang Create</flux:subheading>
     <flux:separator variant="subtle" />
     <flux:breadcrumbs class="my-3">
         <flux:breadcrumbs.item :href="route('dashboard')">Dashboard</flux:breadcrumbs.item>

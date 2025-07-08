@@ -8,7 +8,7 @@
         <thead>
             <tr>
                 @foreach ([
-                    '#', 'Kode Piutang', 'Nomor Faktur', 'Nomor Order', 'Tanggal Transaction', 'Tanggal Jatuh Tempo',
+                    '#', 'Customer Name','Kode Piutang', 'Nomor Faktur', 'Nomor Order', 'Tanggal Transaction', 'Tanggal Jatuh Tempo',
                     'Jumlah Piutang', 'Sisa Piutang', 'Jangka Waktu', 'Status', 'Tanggal Lunas'
                 ] as $header)
                     <th style="border: 1px solid #000; background-color: yellow; color: black; padding: 5px;">
@@ -21,6 +21,7 @@
             @foreach ($piutangs as $key => $piutang)
             <tr>
                 <td style="border: 1px solid #000; padding: 5px; text-align: center;" valign="center">{{ $key + 1 }}</td>
+                <td valign="center" style="border: 1px solid #000; padding: 5px;">{{ $piutang->user?->setting?->full_name ?? $piutang->user?->name }}</td>
                 <td valign="center" style="border: 1px solid #000; padding: 5px;">{{ $piutang->kode_piutang }}</td>
                 <td valign="center" style="border: 1px solid #000; padding: 5px;">{{ $piutang->nomor_faktur }}</td>
                 <td valign="center" style="border: 1px solid #000; padding: 5px;">{{ $piutang->nomor_order }}</td>

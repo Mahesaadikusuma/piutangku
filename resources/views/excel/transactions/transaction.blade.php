@@ -1,7 +1,4 @@
 <x-layouts.export.pdf>
-    @php
-        $total_transaction = $transactions->sum('transaction_total');
-    @endphp
     <table id="table" style="width: 100%; border-collapse: collapse;">
         <thead>
             <tr>
@@ -15,6 +12,7 @@
             @foreach ($transactions as $key => $transaction)
                 @php
                     $piutangCount = $transaction->paymentPiutangs->count();
+                    $total_transaction = $transactions->sum('transaction_total');
                 @endphp
 
                 @if ($piutangCount > 0)
@@ -111,7 +109,7 @@
                     Grand Total 
                 </td>
                 <td align="right" style="border: 1px solid #000; padding: 5px; font-weight: bold;">
-                    {{ number_format($total_transaction, 0, ',', '.') }}
+                    {{ $total_transaction }}
                 </td>
                 
                 <td colspan="2" style="border: 1px solid #000;"></td>
