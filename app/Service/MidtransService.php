@@ -196,22 +196,62 @@ class MidtransService
         $transaction->jenis_pembayaran = ($type === 'bank_transfer' && $bankName) ? "Midtrans-$type-$bankName" : $type;
 
         if ($status == 'settlement' || ($status == 'capture' && $fraud != 'challenge')) {
-            // Log::info('Sisa Hutang:', ['transaction Total' => $transaction->transaction_total]);
-            $sisaHutang = ($piutang->sisa_piutang - $transaction->transaction_total);
-            // Log::info('Sisa Hutang:', ['sisa_hutang' => $sisaHutang]);
-            $piutang->sisa_piutang = $sisaHutang;
-            // Log::info('Sisa Hutang:', ['sisa_piutang' => $piutang->sisa_piutang]);
 
-            if ($sisaHutang === 0.0) {
-                $piutang->status_pembayaran = 'Success';
-                $piutang->tanggal_lunas = Carbon::now();
+            // if ($transaction->paymentPiutangs()->count() > 0) {
+            //     foreach ($transaction->paymentPiutangs as $key => $payment) {
+            //         $sisaHutang = ($piutang->sisa_piutang - $payment->amount);
+            //         $piutang->sisa_piutang = $sisaHutang;
+            //     }
+            // } else {
+            //     $sisaHutang = ($piutang->sisa_piutang - $transaction->transaction_total);
+            //     $piutang->sisa_piutang = $sisaHutang;
+            // }
+
+            // if ($sisaHutang === 0.0) {
+            //     $piutang->status_pembayaran = 'Success';
+            //     $piutang->tanggal_lunas = Carbon::now();
+            // } else {
+            //     $piutang->status_pembayaran = 'Pending';
+            // }
+
+            if ($transaction->paymentPiutangs()->count() > 0) {
+                foreach ($transaction->paymentPiutangs as $payment) {
+                    $piutang = $payment->piutang;
+
+                    if ($piutang) {
+                        $piutang->sisa_piutang -= $payment->amount;
+
+                        if ($piutang->sisa_piutang === 0.0) {
+                            $piutang->status_pembayaran = 'Success';
+                            $piutang->tanggal_lunas = Carbon::now();
+                        } else {
+                            $piutang->status_pembayaran = 'Pending';
+                        }
+
+                        $piutang->save();
+                    }
+                }
             } else {
-                $piutang->status_pembayaran = 'Pending';
+                // fallback jika tidak ada di paymentPiutangs, kurangi piutang dari transaksi langsung
+                $piutang = $transaction->piutang;
+
+                if ($piutang) {
+                    $piutang->sisa_piutang -= $transaction->transaction_total;
+
+                    if ($piutang->sisa_piutang === 0.0) {
+                        $piutang->status_pembayaran = 'Success';
+                        $piutang->tanggal_lunas = Carbon::now();
+                    } else {
+                        $piutang->status_pembayaran = 'Pending';
+                    }
+
+                    $piutang->save();
+                }
             }
         }
 
         $transaction->save();
-        $piutang->save();
+        // $piutang->save();
 
         if (in_array($status, ['capture', 'settlement', 'success'])) {
             // event(new PaymentCompleted($transaction));

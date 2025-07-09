@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exports\piutangs;
+namespace App\Exports\Piutangs;
 
 use App\Repository\PiutangRepository;
 use Maatwebsite\Excel\Concerns\FromQuery;

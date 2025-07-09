@@ -15,7 +15,7 @@ use App\Service\DashboardService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\piutangs\AgeCustomerExport;
+use App\Exports\Piutangs\AgeCustomerExport;
 use App\Repository\Interface\PiutangInterface;
 
 #[Layout('components.layouts.app')]

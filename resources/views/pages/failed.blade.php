@@ -1,4 +1,4 @@
-<x-layouts.export.pdf title="Failed">
+<x-layouts.homePage title="Failed">
     {{-- Care about people's approval and you will be their prisoner. --}}
     <div class="flex justify-center items-center min-h-screen flex-col text-center">
         <img src="{{ asset('images/error-link.svg') }}" alt="">
@@ -10,4 +10,4 @@
             Silakan coba lagi atau gunakan metode pembayaran lain
         </p>
     </div>
-</x-layouts.export.pdf>
+</x-layouts.homePage>

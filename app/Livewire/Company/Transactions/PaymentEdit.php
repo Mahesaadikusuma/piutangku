@@ -78,17 +78,33 @@ class PaymentEdit extends Component
 
             // Jika status yang dipilih saat ini adalah success, maka baru kurangi sisa hutang
             if ($this->status === StatusType::SUCCESS->value) {
-                foreach ($this->transaction->paymentPiutangs as $payment) {
-                    $piutang = Piutang::find($payment->piutang_id);
+                if ($this->transaction->paymentPiutangs->count() > 0) {
+                    foreach ($this->transaction->paymentPiutangs as $payment) {
+                        $piutang = Piutang::find($payment->piutang_id);
 
-                    // Pastikan piutang belum lunas agar tidak dikurangi ulang
-                    if ($piutang->status_pembayaran !== StatusType::SUCCESS->value) {
-                        $piutang->sisa_piutang -= $payment->amount;
+                        // Pastikan piutang belum lunas agar tidak dikurangi ulang
+                        if ($piutang->status_pembayaran !== StatusType::SUCCESS->value) {
+                            $piutang->sisa_piutang -= $payment->amount;
 
-                        if ($piutang->sisa_piutang <= 0) {
-                            $piutang->sisa_piutang = 0;
-                            $piutang->status_pembayaran = StatusType::SUCCESS->value;
+                            if ($piutang->sisa_piutang <= 0.0) {
+                                $piutang->sisa_piutang = 0;
+                                $piutang->status_pembayaran = StatusType::SUCCESS->value;
+                                $piutang->tanggal_lunas = Carbon::now();
+                            }
+
+                            $piutang->save();
+                        }
+                    }
+                } else {
+                    $piutang = Piutang::find($this->transaction->piutang_id);
+                    if ($piutang) {
+                        $piutang->sisa_piutang -= $this->transaction->transaction_total;
+
+                        if ($piutang->sisa_piutang === 0.0) {
+                            $piutang->status_pembayaran = 'Success';
                             $piutang->tanggal_lunas = Carbon::now();
+                        } else {
+                            $piutang->status_pembayaran = 'Pending';
                         }
 
                         $piutang->save();
