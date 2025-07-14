@@ -14,7 +14,6 @@ use Illuminate\Support\Number;
 
 class PiutangRepository implements PiutangInterface
 {
-
     public function getFilteredQueryNotProducts(
         ?string $search = null,
         ?string $customerFilter = null,
@@ -40,24 +39,6 @@ class PiutangRepository implements PiutangInterface
             ->when($month, fn($q) => $q->whereMonth('tanggal_transaction', $month))
             ->when($sortBy === 'latest', fn($q) => $q->oldest())
             ->when($sortBy === 'newest', fn($q) => $q->latest());
-
-        // $query = Piutang::query()
-        // ->doesntHave('products')
-        // ->with(['user', 'agreement', 'paymentPiutangs'])
-        // ->when($this->search, function ($query) {
-        // $query->where(function ($q) {
-        // $q->where('kode_piutang', 'like', '%' . $this->search . '%')
-        // ->orWhere('nomor_faktur', 'like', '%' . $this->search . '%')
-        // ->orWhere('nomor_order', 'like', '%' . $this->search . '%')
-        // ->orWhereHas('user', fn($userQuery) => $userQuery->where('name', 'like', '%' . $this->search . '%'));
-        // });
-        // })
-        // ->when($this->customerFilter !== '', fn($q) => $q->where('user_id', $this->customerFilter))
-        // ->when($this->status !== '', fn($q) => $q->where('status_pembayaran', $this->status))
-        // ->when($this->sortBy === 'latest', fn($q) => $q->oldest())
-        // ->when($this->sortBy === 'newest', fn($q) => $q->latest());
-
-        // $piutangs = $query->paginate($this->perPage);
     }
 
     public function paginateFilteredNotProducts(
@@ -232,12 +213,6 @@ class PiutangRepository implements PiutangInterface
         if ($search) {
             $query->where('users.name', 'like', '%' . $search . '%');
         }
-
-        // // Lanjutkan group & pagination
-        // $data = $query
-        //     ->groupBy('users.id', 'users.name', 'customers.uuid')
-        //     ->paginate($limit);
-
         return $query;
 
 

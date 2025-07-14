@@ -101,7 +101,6 @@ class PiutangCustomers extends Component
                     $this->years,
                     $this->months,
                     $this->sortBy,
-                    $this->perPage
                 ),
                 'Piutangs.xlsx'
             );
