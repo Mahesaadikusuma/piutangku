@@ -139,7 +139,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Card -->
-            <div class="p-4 md:p-5 min-h-102.5 flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl dark:bg-neutral-800 dark:border-neutral-700 ">
+            <div class="p-4 md:p-5 min-h-102.5 flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl dark:bg-[#343A3F] dark:text-white">
                 <flux:dropdown class="mb-4">
                     <flux:button type="button" icon:trailing="chevron-down">Filter</flux:button>
                     <flux:menu>
@@ -168,6 +168,16 @@
                 <div class="" id="chart-month"></div>
             </div>
             <!-- End Card -->
+        </div>
+
+        <div class="my-5">
+            <x-loading wire:loading wire:target="downloadExcel">
+                Exporting Or Import In Progress Please Wait
+            </x-loading>
+
+            <div class="space-y-5">
+                <x-flash-message />
+            </div>
         </div>
 
         <div class="p-4 bg-white dark:bg-neutral-900 shadow-xl rounded-xl sm:p-7">
@@ -286,6 +296,7 @@
     const chartCategories = {!! json_encode($month) !!};
     console.log(chartCategories)
 
+    const isDark = localStorage.getItem('flux.appearance') === 'dark';
     // console.log(chartData, chartCategories, chartName)
     function getChartOptions(data, categories) {
         return {
@@ -300,6 +311,9 @@
                 zoom: {
                     enabled: false
                 }
+            },
+            theme: {
+                mode: isDark ? 'dark' : 'light'
             },
             dataLabels: {
                 enabled: false

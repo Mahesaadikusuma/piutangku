@@ -61,18 +61,6 @@ class PiutangProducts extends Component
     #[On('reloadPiutangs')]
     public function reloadCategories()
     {
-        // $query = Piutang::query()->has('products')->with(['user', 'agreement', 'paymentPiutangs'])
-        //     ->when($this->search, function ($query) {
-        //         $query->where('kode_piutang', 'like', '%' . $this->search . '%')
-        //             ->orWhere('nomor_faktur', 'like', '%' . $this->search . '%')
-        //             ->orWhere('nomor_order', 'like', '%' . $this->search . '%');
-        //     })
-        //     ->when($this->customerFilter !== '', fn($q) => $q->where('user_id', $this->customerFilter))
-        //     ->when($this->status !== '', fn($q) => $q->where('status_pembayaran', $this->status))
-        //     ->when($this->sortBy === 'latest', fn($q) => $q->oldest())
-        //     ->when($this->sortBy === 'newest', fn($q) => $q->latest());
-
-        // return $query->paginate($this->perPage);
         return $this->piutangRepo->paginateFilteredProducts(
             $this->search,
             $this->customerFilter,

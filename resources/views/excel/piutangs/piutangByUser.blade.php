@@ -60,9 +60,9 @@
 
                         <td valign="center" style="border: 1px solid #000; padding: 5px;">{{ $piutang->tanggal_transaction }}</td>
                         <td valign="center" style="border: 1px solid #000; padding: 5px;">{{ $piutang->tanggal_jatuh_tempo }}</td>
-                        <td valign="center" align="right" style="border: 1px solid #000; padding: 5px;">{{ number_format($piutang->jumlah_piutang, 0, ',', '.') }}</td>
-                        <td valign="center" align="right" style="border: 1px solid #000; padding: 5px;">{{ number_format($piutang->sisa_piutang, 0, ',', '.') }}</td>
-                        <td valign="center" style="border: 1px solid #000; padding: 5px;">{{ $piutang->terms }}</td>
+                        <td valign="center" align="right" style="border: 1px solid #000; padding: 5px;">{{ number_format($piutang->jumlah_piutang, 0) }}</td>
+                        <td valign="center" align="right" style="border: 1px solid #000; padding: 5px;">{{ number_format($piutang->sisa_piutang, 0) }}</td>
+                        <td valign="center" style="border: 1px solid #000; padding: 5px;">{{ $piutang->terms }} Hari</td>
                         {{-- <td valign="center" style="border: 1px solid #000; padding: 5px;">{{ $piutang->status_pembayaran }}</td> --}}
                         @switch($piutang->status_pembayaran)
                             @case(App\Enums\StatusType::PENDING->value)
@@ -89,10 +89,10 @@
                     Grand Total
                 </td>
                 <td align="right" style="border: 1px solid #000; padding: 5px; font-weight: bold;">
-                    {{ number_format($total_jumlah_piutang, 0, ',', '.') }}
+                    {{ number_format($total_jumlah_piutang, 0) }}
                 </td>
                 <td align="right" style="border: 1px solid #000; padding: 5px; font-weight: bold;">
-                    {{ number_format($total_sisa_piutang, 0, ',', '.') }}
+                    {{ number_format($total_sisa_piutang, 0) }}
                 </td>
                 <td colspan="3" style="border: 1px solid #000;"></td>
             </tr>

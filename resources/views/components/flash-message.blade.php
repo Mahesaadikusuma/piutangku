@@ -1,4 +1,4 @@
-@props(['success' => 'Successfully Export', 'error' => 'Error!'])
+@props(['success' => 'Successfully ', 'error' => 'Error!'])
 
 @if (session('success'))
     <div class="bg-teal-50 border-t-2 border-teal-500 rounded-lg p-4 dark:bg-teal-800/30" role="alert" tabindex="-1" aria-labelledby="hs-bordered-success-style-label">

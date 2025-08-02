@@ -7,6 +7,14 @@
         <flux:breadcrumbs.item>Piutang Product Detail</flux:breadcrumbs.item>
     </flux:breadcrumbs>
 
+    <div class="my-2">
+        @if ($piutang->agreement && $piutang->agreement->generated_pdf)
+            <flux:button variant="primary" :href="Storage::url($piutang->agreement->generated_pdf)">
+                Download Mou Piutang
+            </flux:button>
+        @endif
+    </div>
+
     <div class="p-4 bg-white dark:bg-neutral-900 shadow-xl rounded-xl sm:p-7">
         <flux:heading level="2" size="lg">Customer {{ $fullName }} - {{ $piutang->user->customer->code_customer }}</flux:heading>
         <div class="flex flex-col gap-5">

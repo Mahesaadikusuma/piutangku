@@ -22,7 +22,8 @@ class UserRepository implements UserInterface
     ): Builder {
         return User::query()->with(['roles', 'permissions'])
             ->when($search, function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%');
+                $query->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('email', 'like', '%' . $search . '%');
             })
             ->when($sortBy === 'latest', fn($q) => $q->orderBy('id', 'asc'))
             ->when($sortBy === 'newest', fn($q) => $q->orderBy('id', 'desc'));

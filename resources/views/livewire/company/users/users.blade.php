@@ -12,7 +12,7 @@
             </flux:modal.trigger> --}}
     
             <div class="flex items-center gap-5">
-                <flux:input wire:model.lazy='search' icon="magnifying-glass" placeholder="Search..."/>
+                <flux:input wire:model.lazy='search' icon="magnifying-glass" placeholder="Search name, email"/>
     
                 <flux:dropdown>
                     <flux:button type="button" icon:trailing="chevron-down">Filter</flux:button>
@@ -72,6 +72,9 @@
                             Name
                         </th>
                         <th scope="col" class="px-6 py-3">
+                            Email
+                        </th>
+                        <th scope="col" class="px-6 py-3">
                             Role
                         </th>
                         <th scope="col" class="px-6 py-3">
@@ -92,6 +95,9 @@
                                 {{ $user->name }}
                             </td>
                             <td class="px-6 py-4">
+                                {{ $user->email }}
+                            </td>
+                            <td class="px-6 py-4">
                                 {{ $user->getRoleNames()->implode(', ') ?? 'N/A' }}
                             </td>
                             <td class="px-6 py-4">
@@ -105,7 +111,7 @@
                         </tr>
                     @empty
                         <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200">
-                            <td colspan="3" class="text-center text-gray-900 dark:text-white py-5">No Record Found</td>
+                            <td colspan="6" class="text-center text-gray-900 dark:text-white py-5">No Record Found</td>
                         </tr>
                     @endforelse
                 </tbody>

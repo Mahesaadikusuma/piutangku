@@ -142,37 +142,43 @@ class PiutangProductEdit extends Component
 
     public function update()
     {
-        $this->calculateTotal();
-        if ($this->piutang->status_pembayaran === StatusType::SUCCESS->value) {
-            // Jangan ubah sisa hutang kalau status sudah SUCCESS
-            $this->sisaHutang = 0;
-        } else {
-            $this->sisaHutang = $this->jumlahPiutang;
+        try {
+            $this->calculateTotal();
+            if ($this->piutang->status_pembayaran === StatusType::SUCCESS->value) {
+                // Jangan ubah sisa hutang kalau status sudah SUCCESS
+                $this->sisaHutang = 0;
+            } else {
+                $this->sisaHutang = $this->jumlahPiutang;
+            }
+            $data = [
+                'terms' => $this->terms,
+                'tanggal_transaction' => $this->tanggalTransaction,
+                'tanggal_jatuh_tempo' => $this->tanggalJatuhTempo,
+                'jumlah_piutang' => $this->jumlahPiutang,
+                'nomor_faktur' => $this->nomorFaktur,
+                'nomor_order' => $this->nomorOrder,
+                'ppn' => $this->ppn,
+                'sisa_piutang' => $this->sisaHutang,
+                'status_pembayaran' => $this->statusPembayaran,
+                'bukti_pembayaran' => $this->proof,
+            ];
+
+            if ($this->proof) {
+                $data['bukti_pembayaran'] = $this->proof;
+            }
+
+            $this->piutangService->updatePiutangProduct(
+                $this->piutang,
+                $this->piutangProducts,
+                $data
+            );
+
+            $this->redirect(PiutangProducts::class);
+            session()->flash('success', 'Piutang updated successfully.');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Piutang update failed.');
+            throw $e;
         }
-        $data = [
-            'terms' => $this->terms,
-            'tanggal_transaction' => $this->tanggalTransaction,
-            'tanggal_jatuh_tempo' => $this->tanggalJatuhTempo,
-            'jumlah_piutang' => $this->jumlahPiutang,
-            'nomor_faktur' => $this->nomorFaktur,
-            'nomor_order' => $this->nomorOrder,
-            'ppn' => $this->ppn,
-            'sisa_piutang' => $this->sisaHutang,
-            'status_pembayaran' => $this->statusPembayaran,
-            'bukti_pembayaran' => $this->proof,
-        ];
-
-        if ($this->proof) {
-            $data['bukti_pembayaran'] = $this->proof;
-        }
-
-        $this->piutangService->updatePiutangProduct(
-            $this->piutang,
-            $this->piutangProducts,
-            $data
-        );
-
-        $this->redirect(PiutangProducts::class);
     }
 
 

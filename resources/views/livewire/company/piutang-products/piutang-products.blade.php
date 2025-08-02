@@ -174,10 +174,21 @@
                         </td>    
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-3">
-                                <flux:button size="sm" icon='arrow-down-tray' wire:click='downloadPdfById({{ $piutang->id }})' variant="filled" class="cursor-pointer">Download Pdf</flux:button>
+                                @if ($piutang->agreement && $piutang->agreement->generated_pdf)
+                                    <flux:button size="sm" icon='arrow-down-tray' wire:click='downloadPdfById({{ $piutang->id }})' variant="filled" class="cursor-pointer">Pdf</flux:button>
+                                @else
+                                    <flux:tooltip toggleable>
+                                        <flux:button icon="information-circle" size="sm" variant="ghost" />
+
+                                        <flux:tooltip.content class="max-w-[20rem] space-y-2">
+                                            <p>Silakan buat dokumen MoU terlebih dahulu.</p>
+                                            <p>Anda dapat menambahkannya melalui menu <strong>Edit Piutang → MoU Piutang</strong>.</p>
+                                        </flux:tooltip.content>
+                                    </flux:tooltip>
+                                @endif
                                 <flux:button size="sm" :href="route('master-data.piutang-product.edit', $piutang->uuid)" variant="ghost" class="cursor-pointer">Edit</flux:button>
                                 <flux:button :href="route('master-data.piutang-product.detail', $piutang->uuid)" variant="filled">Detail</flux:button>
-                                @if ($piutang->status_pembayaran != App\Enums\StatusType::SUCCESS->value)
+                                @if ($piutang->status_pembayaran != App\Enums\StatusType::SUCCESS->value && $piutang->transactions->count() == 0)
                                     <flux:button size="sm" variant="danger" class="cursor-pointer" wire:click="delete({{ $piutang->id }})">Delete</flux:button>
                                 @endif
                             </div>

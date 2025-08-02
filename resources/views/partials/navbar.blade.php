@@ -116,6 +116,13 @@
                 Dashboard
               </flux:button>
               @endrole
+
+              <form method="POST" action="{{ route('logout') }}" class="w-full cursor-pointer">
+                  @csrf
+                  <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">
+                      {{ __('Log Out') }}
+                  </flux:menu.item>
+              </form>
             </div>
             @endauth
             <!-- End Button Group -->

@@ -64,6 +64,7 @@ class PiutangMouForm extends Form
             'browName.required' => 'Nama customer wajib diisi.',
             'agreeDate.required' => 'Tanggal perjanjian wajib diisi.',
             'content.required' => 'Isi perjanjian wajib diisi.',
+            'content.min' => 'Isi perjanjian minimal 10 karakter.',
         ];
     }
 
@@ -106,7 +107,7 @@ class PiutangMouForm extends Form
         if ($piutangAgreement && $piutangAgreement->generated_pdf && Storage::disk('public')->exists($piutangAgreement->generated_pdf)) {
             Storage::disk('public')->delete($piutangAgreement->generated_pdf);
         }
-        $path = null;
+        $path = $piutangAgreement?->generated_pdf;
         if ($this->generatePdf) {
             $path = $this->generatePdf->storeAs('piutangs/mou', $this->generatePdf->hashName(), 'public');
         }

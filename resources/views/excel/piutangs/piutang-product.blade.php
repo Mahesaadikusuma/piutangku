@@ -60,10 +60,7 @@
                                 {{ $piutang->sisa_piutang }}</td>
                             <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px;"
                                 valign="center">
-                                {{ $piutang->terms }}</td>
-                            {{-- <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px;"
-                                valign="center">
-                                {{ $piutang->status_pembayaran }}</td> --}}
+                                {{ $piutang->terms }} Hari</td>
                             @switch($piutang->status_pembayaran)
                                 @case(App\Enums\StatusType::PENDING->value)
                                 <td rowspan="{{ $productCount }}" valign="center" style="border: 1px solid #000; padding: 5px; color: orange">{{ $piutang->status_pembayaran }}</td>
@@ -97,16 +94,16 @@
             @endforeach
 
             <tr>
-                <td valign="center" align="center" colspan="9" style="border: 1px solid #000; padding: 5px; text-align: right; font-weight: bold;">
+                <td valign="center" align="center" colspan="10" style="border: 1px solid #000; padding: 5px; text-align: right; font-weight: bold;">
                     Grand Total
                 </td>
                 <td align="right" style="border: 1px solid #000; padding: 5px; font-weight: bold;">
-                    {{ number_format($total_jumlah_piutang, 0, ',', '.') }}
+                    {{ number_format($total_jumlah_piutang, 0) }}
                 </td>
                 <td align="right" style="border: 1px solid #000; padding: 5px; font-weight: bold;">
-                    {{ number_format($total_sisa_piutang, 0, ',', '.') }}
+                    {{ number_format($total_sisa_piutang, 0) }}
                 </td>
-                <td colspan="4" style="border: 1px solid #000;"></td>
+                <td colspan="3" style="border: 1px solid #000;"></td>
             </tr>
         </tbody>
     </table>

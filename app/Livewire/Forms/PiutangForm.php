@@ -104,7 +104,9 @@ class PiutangForm extends Form
                 'tanggal_jatuh_tempo' => $this->tanggalJatuhTempo,
             ];
             $this->piutangRepository->createPiutang($data);
+            session()->flash('success', 'Piutang created successfully.');
         } catch (Exception $e) {
+            session()->flash('error', 'Piutang creation failed.');
             throw $e;
         }
     }
@@ -141,7 +143,9 @@ class PiutangForm extends Form
             }
 
             $this->piutangService->updatePiutang($this->piutang, $data);
+            session()->flash('success', 'Piutang updated successfully.');
         } catch (Exception $th) {
+            session()->flash('error', 'Piutang update failed.');
             throw $th;
         }
     }

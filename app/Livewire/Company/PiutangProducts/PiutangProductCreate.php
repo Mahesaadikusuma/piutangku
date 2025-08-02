@@ -127,8 +127,10 @@ class PiutangProductCreate extends Component
             }
             DB::commit();
             $this->redirect(PiutangProducts::class);
+            session()->flash('success', 'Piutang created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
+            session()->flash('error', 'Piutang created successfully.');
             throw $e;
         }
     }

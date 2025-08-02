@@ -59,20 +59,8 @@ class Users extends Component
         $this->dispatch('userEdit', $id);
     }
 
-    // public function getFilteredUsers()
-    // {
-    //     return User::query()
-    //         ->with(['roles', 'permissions'])
-    //         ->when($this->search, fn($query) => $query->where('name', 'like', '%' . $this->search . '%'))
-    //         ->when($this->sortBy === 'latest', fn($q) => $q->orderBy('id', 'asc'))
-    //         ->when($this->sortBy === 'newest', fn($q) => $q->orderBy('id', 'desc'))
-    //         ->get();
-    // }
-
     public function downloadPdf()
     {
-        // ini_set('memory_limit', '512M');
-        // set_time_limit(60);
         $users = collect();
         try {
             $now = Carbon::now();
@@ -98,7 +86,6 @@ class Users extends Component
     public function downloadExcel()
     {
         try {
-
             $export = Excel::download(new UsersExport, 'Users.xlsx');
             session()->flash('success', 'Excel exported successfully.');
             return $export;
@@ -108,30 +95,9 @@ class Users extends Component
             return back();
         }
     }
-    // public function downloadPdf()
-    // {
-    //     try {
-    //         ini_set('memory_limit', '512M');
-    //         $export = Excel::download(new UsersPdfExport($this->userRepo, $this->search, $this->sortBy), 'Users.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
-    //         session()->flash('success', 'Excel exported successfully.');
-    //         return $export;
-    //     } catch (\Exception $e) {
-    //         Log::info("Error: " . $e->getMessage());
-    //         session()->flash('error', 'Excel export failed.');
-    //         return back();
-    //     }
-    // }
 
     public function render()
     {
-        // $query = User::query()->with(['roles', 'permissions'])
-        //     ->when($this->search, function ($query) {
-        //         $query->where('name', 'like', '%' . $this->search . '%');
-        //     })
-        //     ->when($this->sortBy === 'latest', fn($q) => $q->orderBy('id', 'asc'))
-        //     ->when($this->sortBy === 'newest', fn($q) => $q->orderBy('id', 'desc'));
-
-        // $users = $query->paginate($this->perPage);
         $users = $this->userRepo->paginateFilteredUsers($this->search, $this->sortBy, $this->perPage);
         return view('livewire.company.users.users', compact('users'));
     }

@@ -5,6 +5,8 @@ namespace App\Livewire\Company\Piutangs;
 use App\Livewire\Forms\PiutangMouForm;
 use App\Models\Piutang;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -27,11 +29,17 @@ class PiutangMou extends Component
 
     public function save()
     {
-        $this->form->save();
-        $this->form->setPiutang($this->piutang);
-
-        // Jika ingin tetap di halaman ini (tanpa redirect):
-        $this->dispatch('formUpdated');
+        try {
+            $this->form->save();
+            $this->form->setPiutang($this->piutang);
+            session()->flash('success', 'Piutang MOU berhasil.');
+            // $this->dispatch('formUpdated');
+            $this->redirectRoute('master-data.piutang.mou', ['piutang' => $this->piutang->uuid]);
+        } catch (\Exception $e) {
+            session()->flash('error', 'Piutang MOU gagal.');
+            Log::error("Error: " . $e->getMessage());
+            return back();
+        }
     }
 
     public function downloadPdf()

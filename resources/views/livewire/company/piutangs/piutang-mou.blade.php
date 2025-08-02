@@ -16,6 +16,16 @@
         @endif    
     </div>
 
+    <div class="my-5">
+        <x-loading wire:loading wire:target="downloadPdf, save">
+            Loading ...
+        </x-loading>
+
+        <div class="space-y-5">
+            <x-flash-message />
+        </div>
+    </div>
+
     <div class="p-4 bg-white dark:bg-neutral-900 shadow-xl rounded-xl sm:p-7">
         <form wire:submit='save'>
             <div class="flex flex-col gap-6">
@@ -115,7 +125,7 @@
                 />
 
                 @if ($piutang->agreement)
-                    <flux:input type="file" wire:model="form.generatePdf" label="Simpan Mou"/>
+                    <flux:input  required type="file" wire:model="form.generatePdf" label="Simpan Mou"/>
                 @endif
 
                 <flux:button type="submit" variant="primary" class="w-full">Save changes</flux:button>
@@ -126,5 +136,11 @@
     @if ($piutang->agreement && $piutang->agreement->generated_pdf)
     <iframe src="{{ Storage::url($piutang->agreement->generated_pdf) }}" height="500" width="500" title="Iframe Example"></iframe>
     @endif
-
 </div>
+
+
+@push('scripts')
+    <script>
+        console.log("mou mahesa")
+    </script>
+@endpush

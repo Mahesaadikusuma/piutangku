@@ -8,7 +8,7 @@
 
             <form wire:submit="update" class="flex flex-col gap-6">
                 <flux:input disabled wire:model.lazy="form.name"  label="Name" placeholder="Name User" type="text"  class="cursor-not-allowed" />
-                <flux:input disabled wire:model.lazy="form.email"  label="Name" placeholder="Email" type="text" class="cursor-not-allowed" />
+                <flux:input disabled wire:model.lazy="form.email"  label="Email" placeholder="Email" type="email" class="cursor-not-allowed" />
                 <flux:select  searchable placeholder="Pilih Role..." label="Roles" wire:model.lazy="form.roleId">
                     {{-- <flux:select.option>Pilih Categories</flux:select.option> --}}
                     <flux:select.option value="">Tidak Ada Role</flux:select.option>

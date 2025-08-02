@@ -7,6 +7,14 @@
         <flux:breadcrumbs.item>Piutang Detail</flux:breadcrumbs.item>
     </flux:breadcrumbs>
 
+    <div class="my-2">
+        @if ($piutang->agreement && $piutang->agreement->generated_pdf)
+            <flux:button variant="primary" :href="Storage::url($piutang->agreement->generated_pdf)">
+                Download Mou Piutang
+            </flux:button>
+        @endif
+    </div>
+
     <div class="p-4 bg-white dark:bg-neutral-900 shadow-xl rounded-xl sm:p-7">
         <flux:heading level="2" size="lg">Customer {{ $fullName }} - {{ $piutang->user->customer->code_customer }}</flux:heading>
         <div class="flex flex-col gap-5">
@@ -192,7 +200,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
                                     <div class="flex items-center gap-5">
                                         @if ($transaction->paymentPiutangs->count() > 0)
-                                            <flux:button size="xs" variant="primary" class="cursor-pointer" :href="route('transaction.show',$transaction->id)">Show</flux:button>
+                                            <flux:button size="xs" variant="primary" class="cursor-pointer" :href="route('transaction.show',$transaction->uuid)">Show</flux:button>
                                         @endif
                                     </div>
                                 </td>
