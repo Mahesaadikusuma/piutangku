@@ -5,6 +5,8 @@ namespace App\Livewire\Forms;
 use App\Models\Piutang;
 use App\Models\PiutangAgreement;
 use Carbon\Carbon;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
@@ -102,33 +104,37 @@ class PiutangMouForm extends Form
     public function save()
     {
         $this->validate();
-
         $piutangAgreement = PiutangAgreement::where('piutang_id', $this->piutang_id)->first();
-        if ($piutangAgreement && $piutangAgreement->generated_pdf && Storage::disk('public')->exists($piutangAgreement->generated_pdf)) {
-            Storage::disk('public')->delete($piutangAgreement->generated_pdf);
+        $data = [
+            'agreement_number' => $this->nomorDokument,
+            'agreement_lampiran' => $this->lampiran,
+            'agreement_perihal' => $this->perihal,
+            'leader_company' => $this->leadCompany,
+            'leader_name' => $this->leadName,
+            'leader_position' => $this->leadPoss,
+            'borrower_company' => $this->browCompany,
+            'borrower_name' => $this->browName,
+            'borrower_address' => $this->browAddress,
+            'borrower_position' => $this->browPoss,
+            'agreement_date' => $this->agreeDate,
+            'content' => $this->content,
+        ];
+
+        if ($this->generatePdf instanceof UploadedFile) {
+            // Hapus file lama jika ada
+            if ($piutangAgreement && $piutangAgreement->generated_pdf && Storage::disk('public')->exists($piutangAgreement->generated_pdf)) {
+                Storage::disk('public')->delete($piutangAgreement->generated_pdf);
+            }
+
+            // Simpan file baru
+            $data['generated_pdf'] = $this->generatePdf->store('piutangs/mou', 'public');
         }
-        $path = $piutangAgreement?->generated_pdf;
-        if ($this->generatePdf) {
-            $path = $this->generatePdf->storeAs('piutangs/mou', $this->generatePdf->hashName(), 'public');
-        }
+
+        Log::info("generatePdf: " . $this->generatePdf);
 
         PiutangAgreement::updateOrCreate(
             ['piutang_id' => $this->piutang_id],
-            [
-                'agreement_number' => $this->nomorDokument,
-                'agreement_lampiran' => $this->lampiran,
-                'agreement_perihal' => $this->perihal,
-                'leader_company' => $this->leadCompany,
-                'leader_name' => $this->leadName,
-                'leader_position' => $this->leadPoss,
-                'borrower_company' => $this->browCompany,
-                'borrower_name' => $this->browName,
-                'borrower_address' => $this->browAddress,
-                'borrower_position' => $this->browPoss,
-                'agreement_date' => $this->agreeDate,
-                'content' => $this->content,
-                'generated_pdf' => $path ?? $piutangAgreement?->generated_pdf
-            ]
+            $data
         );
     }
 }

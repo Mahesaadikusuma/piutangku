@@ -17,6 +17,7 @@ class CustomerNewUser extends Component
     public function store()
     {
         $this->form->store();
+        $this->redirect('/company/master-data/customer/customers');
     }
 
     #[Computed()]

@@ -25,6 +25,7 @@ class CustomerEdit extends Component
     public function update()
     {
         $this->form->update();
+        $this->redirect('/company/master-data/customer/customers');
     }
 
     #[Computed()]

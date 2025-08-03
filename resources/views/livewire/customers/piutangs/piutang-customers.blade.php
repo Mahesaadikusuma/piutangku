@@ -159,7 +159,31 @@
                         </td>    
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-3">
-                                <flux:button size="sm" icon='arrow-down-tray' wire:click='downloadPdfById({{ $piutang->id }})' variant="ghost" class="cursor-pointer">Pdf</flux:button>
+                                @if ($piutang->agreement && $piutang->agreement->generated_pdf)
+                                    <flux:button size="sm" icon='arrow-down-tray' wire:click='downloadPdfById({{ $piutang->id }})' variant="ghost" class="cursor-pointer">Pdf</flux:button>
+                                @else
+                                    <flux:tooltip toggleable>
+                                        <flux:button icon="information-circle" size="sm" variant="ghost" />
+
+                                        <flux:tooltip.content class="max-w-[20rem] space-y-2">
+                                            <p>Silakan buat dokumen MoU terlebih dahulu.</p>
+                                            <p>Anda dapat menambahkannya melalui menu <strong>Edit Piutang → MoU Piutang</strong>.</p>
+                                        </flux:tooltip.content>
+                                    </flux:tooltip>
+                                @endif
+
+                                @if ($piutang->tanggal_kirim)
+                                    <flux:tooltip toggleable>
+                                        <flux:button icon="truck" size="sm" variant="ghost" />
+
+                                        <flux:tooltip.content class="max-w-[20rem] space-y-2">
+                                            <p>Pengiriman piutang ini dijadwalkan pada tanggal:</p>
+                                            <p><strong>{{ \Carbon\Carbon::parse($piutang->tanggal_kirim)->translatedFormat('d F Y') }}</strong></p>
+                                            <p>Pengiriman pesanan Anda dijadwalkan pada tanggal tersebut.</p>
+                                        </flux:tooltip.content>
+                                    </flux:tooltip>
+                                @endif
+
                                 @if ($piutang->status_pembayaran == App\Enums\StatusType::PENDING->value)
                                 <flux:button size="sm" icon='shopping-cart' variant="primary" class="cursor-pointer" :href="route('transactions.piutang.payment', $piutang->uuid)">
                                     Payment

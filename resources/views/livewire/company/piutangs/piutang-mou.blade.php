@@ -118,14 +118,22 @@
                     autocomplete="tanggal-dibuat"
                     :placeholder="__('tanggal')"
                 />
-                <flux:textarea
+                {{-- <flux:textarea
+                    id="editor"
                     wire:model.lazy="form.content"
                     label="Isi Perjanjian"
                     placeholder="No lettuce, tomato, or onion..."
-                />
+                /> --}}
+
+                <div wire:ignore>
+                    <label for="editor">Isi Perjanjian</label>
+                    <div id="editor" class="min-h-[200px]">
+                        {!! $piutang->agreement->content !!}
+                    </div>
+                </div>
 
                 @if ($piutang->agreement)
-                    <flux:input  required type="file" wire:model="form.generatePdf" label="Simpan Mou"/>
+                    <flux:input   type="file" wire:model="form.generatePdf" label="Simpan Mou"/>
                 @endif
 
                 <flux:button type="submit" variant="primary" class="w-full">Save changes</flux:button>
@@ -140,7 +148,14 @@
 
 
 @push('scripts')
-    <script>
-        console.log("mou mahesa")
-    </script>
+<script>
+    const quill = new Quill('#editor', {
+        placeholder: 'Isi Perjanjian...',
+        theme: 'snow',
+    });
+
+    quill.on('text-change', (delta, oldDelta, source) => {
+        @this.set('form.content', quill.root.innerHTML);
+    });
+</script>
 @endpush

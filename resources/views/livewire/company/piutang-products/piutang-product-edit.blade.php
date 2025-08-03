@@ -206,6 +206,16 @@
                     :placeholder="__('Jangka Waktu')"
                 />
 
+                <div x-data="tanggalKirim(@entangle('tanggalKirim'))" class="">
+                    <flux:input
+                        x-ref="tanggalKirim" x-model="value"
+                        :label="__('Tanggal Kirim')" id="tanggalKirim"
+                        type="date"
+                        required
+                        autocomplete="tanggal-kirim"
+                        :placeholder="__('Tanggal Kirim')"
+                    />
+                </div>
                 <div x-data="tanggalTransaction(@entangle('tanggalTransaction'))" class="">
                     <flux:input
                         x-ref="tanggalTransaction" x-model="value"
@@ -238,6 +248,28 @@
 @push('scripts')
     <script>
         document.addEventListener('alpine:init', () => {
+            Alpine.data('tanggalKirim', (initialValue) => ({
+                value: initialValue,
+
+                init() {
+                    // console.log(`Awal Tempo: ${this.value}`);
+                    const self = this;
+                    new Pikaday({
+                        field: this.$refs.tanggalKirim,
+                        format: 'YYYY-MM-DD',
+                        toString(date, format) {
+                            const day = String(date.getDate()).padStart(2, '0');
+                            const month = String(date.getMonth() + 1).padStart(2, '0');
+                            const year = date.getFullYear();
+                            return `${year}-${month}-${day}`;
+                        },
+                        onSelect(date) {
+                            self.value = moment(date).format('YYYY-MM-DD');
+                            @this.set('tanggalKirim', self.value, false);
+                        }
+                    });
+                }
+            }));
             Alpine.data('tanggalTransaction', (initialValue) => ({
                 value: initialValue,
 

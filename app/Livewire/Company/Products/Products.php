@@ -100,11 +100,6 @@ class Products extends Component
             $this->sortBy,
             $this->perPage
         );
-
-        // $products = $this->productRepo->getFilteredQuery();
-
-        // dd($products);
-        // $products = Product::with('category')->paginate($this->perPage);
         return view('livewire.company.products.products', [
             'products' => $products
         ]);

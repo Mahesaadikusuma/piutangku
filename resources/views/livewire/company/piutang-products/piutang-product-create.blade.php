@@ -28,14 +28,40 @@
                     autocomplete="Nomor-order"
                     :placeholder="__('Nomor Order')"
                 />
-                <flux:select wire:model.lazy="userId" placeholder="Choose Customer..." label="Customer">
+                {{-- <flux:select wire:model.lazy="userId" placeholder="Choose Customer..." label="Customer">
                     <flux:select.option value="">Pilih Customer</flux:select.option> 
                     @foreach ($this->customers as $customer)
                         <flux:select.option :value="$customer->user->id">
                             {{ $customer->code_customer }} - {{ $customer->user->name }}
                         </flux:select.option>
                     @endforeach
-                </flux:select>
+                </flux:select> --}}
+
+                <flux:field wire:ignore>
+                    <flux:label>{{ __('Customers') }}</flux:label>
+                    <flux:input.group class="max-w-xl md:max-w-full">
+                        <flux:select 
+                            x-init="
+                                $($el).select2({ placeholder: 'Pilih Customer' });
+                                $($el).on('change', function() {
+                                    $wire.set('userId', $($el).val());
+                                });
+                            " 
+                            wire:model.change="userId" 
+                        >
+                            <!-- Option kosong untuk default -->
+                            <flux:select.option value="">{{ __('-- Pilih Customer --') }}</flux:select.option>
+
+                            @foreach ($this->customers as $customer)
+                                <flux:select.option :value="$customer->user->id">
+                                    {{ $customer->code_customer }} - {{ $customer->user->name }}
+                                </flux:select.option>
+                            @endforeach
+                        </flux:select>
+                    </flux:input.group>
+                    <flux:error name="userId" />
+                </flux:field>   
+
                 <flux:input
                     wire:model.lazy="ppn"
                     :label="__('PPN')"

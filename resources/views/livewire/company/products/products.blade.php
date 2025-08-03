@@ -126,7 +126,12 @@
                         <td class="px-6 py-4">
                             <div wire:ignore class="flex items-center gap-3">
                                 <flux:button size="sm" variant="primary" class="cursor-pointer" wire:click="edit({{ $product->id }})">Edit</flux:button>
-                                <flux:button size="sm" variant="danger" class="cursor-pointer" wire:click="delete({{ $product->id }})">Delete</flux:button>
+                                @can('delete')
+                                    <flux:button size="sm" variant="danger" class="cursor-pointer"
+                                        wire:click="delete({{ $product->id }})">
+                                        Delete ESA
+                                    </flux:button>
+                                @endcan
                             </div>
                         </td>
                     </tr>

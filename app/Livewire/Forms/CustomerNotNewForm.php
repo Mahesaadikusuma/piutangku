@@ -103,6 +103,8 @@ class CustomerNotNewForm extends Form
                 'code_customer' => $this->codeCustomer,
                 'setting_id' => $setting->id,
             ]);
+
+            session()->flash('success', 'Customer created successfully');
         } catch (\Exception $e) {
             Log::error('error', [
                 'message' => $e->getMessage(),

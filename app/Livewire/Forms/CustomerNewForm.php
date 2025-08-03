@@ -122,7 +122,8 @@ class CustomerNewForm extends Form
                 'user_id' => $user->id,
                 'setting_id' => $setting->id,
             ]);
-            $this->reset();
+            // $this->reset();
+            session()->flash('success', 'Customer created successfully');
         } catch (Exception $e) {
             Log::error('error', [
                 'message' => $e->getMessage(),

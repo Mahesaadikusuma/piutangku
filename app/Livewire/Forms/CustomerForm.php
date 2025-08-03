@@ -111,7 +111,10 @@ class CustomerForm extends Form
                 'village_id' => $this->villageId,
             ]);
 
-            return $this->customerRepository->updateCustomer($data, $this->customer);
+
+            $this->customerRepository->updateCustomer($data, $this->customer);
+
+            session()->flash('success', 'Customer updated successfully');
         } catch (Exception $e) {
             Log::error('error', [
                 'message' => $e->getMessage(),

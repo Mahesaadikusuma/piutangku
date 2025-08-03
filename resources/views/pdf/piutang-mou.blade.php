@@ -7,7 +7,7 @@
             font-family: DejaVu Sans, sans-serif;
             font-size: 12px;
             line-height: 1.6;
-            margin: 10px;
+            
         }
 
         .logo {
@@ -54,21 +54,22 @@
             text-align: center;
         }
 
-        .clear {
-            clear: both;
+        p {
+            margin: 0 0 8px 0; /* atau 5px sesuai keinginan */
+            line-height: 1.5;
+        }
+        p:empty {
+            display: none; /* sembunyikan paragraf kosong (dari <p><br></p>) */
         }
 
-        .mt-2 {
-            margin-top: 10px;
+        br {
+            margin-top: -20px;
         }
 
-        .mt-4 {
-            margin-top: 20px;
+        .ql-editor p {
+            margin: 0 0 8px;
         }
 
-        .mb-2 {
-            margin-bottom: 10px;
-        }
     </style>
 @endpush
 
@@ -78,7 +79,6 @@
     </div>
 
     <div class="header">
-        {{-- Jakarta, 2 Juni 2025 --}}
         {{ Carbon\Carbon::parse($agreement->agreement_date)->translatedFormat('d F Y')}}
     </div>
 
@@ -108,9 +108,9 @@
 
         <p>Dengan Hormat,</p>
 
-        <p>
-            {{ $agreement->content }}
-        </p>
+        <div>
+            {!! $agreement->content !!}
+        </div>
 
         <table class="table">
             <thead>
@@ -132,23 +132,14 @@
                 </tr>
             </tbody>
         </table>
-
-        {{-- <p>
+{{-- 
+        <p>
             Kami berharap Bapak/Ibu memberikan izin pengambilan data untuk mahasiswa tersebut.
         </p>
 
         <p>Demikianlah atas perhatian dan kerjasamanya, kami ucapkan terima kasih.</p> --}}
     </div>
 
-    {{-- <div class="signature">
-        <div class="right">
-            <p>Kaprodi Teknik Informatika</p>
-            <br><br><br>
-            <p><strong>Dr. Riya Widayanti, S.Kom, MMSI</strong></p>
-        </div>
-    </div>
-
-    <div class="clear"></div> --}}
 
     <table style="width: 100%; margin-top: 60px;">
         <tr>

@@ -41,6 +41,7 @@ class PiutangProductEdit extends Component
     public $subtotal = 0;
     public $ppnAmount = 0;
     public $proof;
+    public $tanggalKirim;
 
     public bool $hasPayment = false;
 
@@ -67,6 +68,7 @@ class PiutangProductEdit extends Component
             'piutangProducts.*.product_id' => 'required|exists:products,id',
             'piutangProducts.*.qty' => 'required|integer|min:1',
             'piutangProducts.*.price' => 'required|numeric|min:1',
+            'tanggalKirim' => 'nullable|date'
         ];
     }
 
@@ -104,6 +106,7 @@ class PiutangProductEdit extends Component
             'piutangProducts.*.price.required' => 'Harga produk wajib diisi.',
             'piutangProducts.*.price.numeric' => 'Harga harus berupa angka.',
             'piutangProducts.*.price.min' => 'Harga minimal Rp1.',
+            'tanggalKirim.date' => 'Tanggal kirim tidak valid.',
         ];
     }
 
@@ -123,6 +126,7 @@ class PiutangProductEdit extends Component
         $this->sisaHutang = $piutang->sisa_piutang;
         $this->statusPembayaran = $piutang->status_pembayaran;
         $this->buktiPembayaran = $piutang->bukti_pembayaran;
+        $this->tanggalKirim = $piutang->tanggal_kirim;
 
 
         if ($piutang->products->count() > 0) {
@@ -161,6 +165,7 @@ class PiutangProductEdit extends Component
                 'sisa_piutang' => $this->sisaHutang,
                 'status_pembayaran' => $this->statusPembayaran,
                 'bukti_pembayaran' => $this->proof,
+                'tanggal_kirim' => $this->tanggalKirim
             ];
 
             if ($this->proof) {

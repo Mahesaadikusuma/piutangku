@@ -34,6 +34,7 @@ class PiutangForm extends Form
     public $kodePiutang;
     public $jumlahPpn;
     public $grandTotal;
+    public $tanggalKirim;
 
     protected PiutangInterface $piutangRepository;
     protected PiutangService $piutangService;
@@ -55,6 +56,7 @@ class PiutangForm extends Form
             'terms' => 'required|integer|min:10',
             'tanggalTransaction' => 'required|date',
             'tanggalJatuhTempo' => 'required|date|after_or_equal:awalTempo',
+            'tanggalKirim' => 'nullable|date'
         ];
     }
 
@@ -84,7 +86,7 @@ class PiutangForm extends Form
             'tanggalJatuhTempo.required' => 'Tanggal jatuh tempo harus diisi.',
             'tanggalJatuhTempo.date' => 'Tanggal jatuh tempo tidak valid.',
             'tanggalJatuhTempo.after_or_equal' => 'Tanggal jatuh tempo harus sama atau setelah tanggal transaksi.',
-
+            'tanggalKirim.date' => 'Tanggal kirim tidak valid.',
         ];
     }
 
@@ -132,6 +134,7 @@ class PiutangForm extends Form
                 'sisa_piutang' => $this->sisaHutang,
                 'status_pembayaran' => $this->statusPembayaran,
                 'bukti_pembayaran' => $this->buktiPembayaran ?? null,
+                'tanggal_kirim' => $this->tanggalKirim
             ];
 
             if ($this->buktiPembayaran) {
@@ -165,6 +168,7 @@ class PiutangForm extends Form
         $this->sisaHutang = $piutang->sisa_piutang;
         $this->statusPembayaran = $piutang->status_pembayaran;
         $this->buktiPembayaran = $piutang->bukti_pembayaran;
+        $this->tanggalKirim = $piutang->tanggal_kirim;
 
         // Tambahkan ini untuk menghitung ulang jumlahPpn & grandTotal saat edit
         $this->hitungJumlahPpn();

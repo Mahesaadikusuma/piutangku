@@ -186,10 +186,24 @@
                                         </flux:tooltip.content>
                                     </flux:tooltip>
                                 @endif
+
+                                @if ($piutang->tanggal_kirim)
+                                    <flux:tooltip toggleable>
+                                        <flux:button icon="truck" size="sm" variant="ghost" />
+
+                                        <flux:tooltip.content class="max-w-[20rem] space-y-2">
+                                            <p>Pengiriman piutang ini dijadwalkan pada tanggal:</p>
+                                            <p><strong>{{ \Carbon\Carbon::parse($piutang->tanggal_kirim)->translatedFormat('d F Y') }}</strong></p>
+                                            <p>Pastikan tidak ada kendala agar pengiriman dapat dilakukan tepat waktu.</p>
+                                        </flux:tooltip.content>
+                                    </flux:tooltip>
+                                @endif
                                 <flux:button size="sm" :href="route('master-data.piutang-product.edit', $piutang->uuid)" variant="ghost" class="cursor-pointer">Edit</flux:button>
                                 <flux:button :href="route('master-data.piutang-product.detail', $piutang->uuid)" variant="filled">Detail</flux:button>
                                 @if ($piutang->status_pembayaran != App\Enums\StatusType::SUCCESS->value && $piutang->transactions->count() == 0)
-                                    <flux:button size="sm" variant="danger" class="cursor-pointer" wire:click="delete({{ $piutang->id }})">Delete</flux:button>
+                                    @can('delete')
+                                        <flux:button size="sm" variant="danger" class="cursor-pointer" wire:click="delete({{ $piutang->id }})">Delete</flux:button>
+                                    @endcan
                                 @endif
                             </div>
                         </td>

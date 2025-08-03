@@ -292,12 +292,13 @@
 @script
 <script>
     const chartData = {!! json_encode($totalPiutangByMonth) !!};
-    
     const chartCategories = {!! json_encode($month) !!};
-    console.log(chartCategories)
+    const appearance = localStorage.getItem('flux.appearance') || 'system';
 
-    const isDark = localStorage.getItem('flux.appearance') === 'dark';
-    // console.log(chartData, chartCategories, chartName)
+    const isDark = appearance === 'dark' || 
+                (appearance === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+    console.log(isDark);
     function getChartOptions(data, categories) {
         return {
             colors: ['#FFA500'],
@@ -364,7 +365,6 @@
     chart.render();
     Livewire.on('filter', (data) => {
         setTimeout(() => {
-            console.log(data);
             chart.updateSeries([{
                 name: 'Jumlah Piutang',
                 data: data[0].orders,
