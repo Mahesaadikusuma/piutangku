@@ -35,7 +35,7 @@ class ProductForm extends Form
     protected function rules()
     {
         return [
-            'code' => 'required|string|min:3|max:100',
+            'code' => 'required|string|unique:products,kode_product|min:3|max:100',
             'name' => 'required|string|min:3|max:100',
             'category_id' => 'required|exists:categories,id',
             'description' => 'nullable|string|min:5',
@@ -51,6 +51,7 @@ class ProductForm extends Form
             'code.required' => 'Kode product  harus di isi.',
             'code.min' => 'Kode product Minimal characters 3 huruf.',
             'code.max' => 'Kode product terlalu panjang maximal 100 huruf.',
+            'code.unique' => 'Kode product sudah ada.',
             'name.required' => 'product name harus di isi.',
             'name.min' => 'product Minimal characters 3 huruf.',
             'name.max' => 'product name terlalu panjang maximal 100 huruf.',

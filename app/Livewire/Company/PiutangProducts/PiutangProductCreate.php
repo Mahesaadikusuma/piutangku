@@ -44,7 +44,7 @@ class PiutangProductCreate extends Component
             'nomorFaktur' => 'nullable|string|min:3|max:100|unique:piutangs,nomor_faktur',
             'nomorOrder' => 'nullable|string|min:3|max:100|unique:piutangs,nomor_order',
             'ppn' => 'required|integer|min:0|max:100',
-            'terms' => 'required|integer|min:1|max:365',
+            'terms' => 'required|integer|min:1|max:1000',
             'tanggalTransaction' => 'required|date',
             'tanggalJatuhTempo' => 'required|date|after_or_equal:tanggalTransaction',
             'piutangProducts' => 'required|array|min:1',
@@ -59,7 +59,6 @@ class PiutangProductCreate extends Component
         return [
             'userId.required' => 'Customer wajib dipilih.',
             'userId.exists' => 'Customer tidak valid.',
-
             'nomorFaktur.min' => 'Nomor faktur minimal 3 karakter.',
             'nomorFaktur.max' => 'Nomor faktur maksimal 100 karakter.',
             'nomorFaktur.unique' => 'Nomor faktur sudah digunakan.',
@@ -91,8 +90,6 @@ class PiutangProductCreate extends Component
         ];
     }
 
-
-
     public function mount()
     {
         $this->piutangProducts[] = [
@@ -109,6 +106,7 @@ class PiutangProductCreate extends Component
     public function store()
     {
         DB::beginTransaction();
+        $this->validate();
         try {
             $dataPiutang = [
                 'user_id' => $this->userId,
@@ -121,16 +119,26 @@ class PiutangProductCreate extends Component
                 'tanggal_jatuh_tempo' => $this->tanggalJatuhTempo,
             ];
             $piutang = $this->piutangRepository->createPiutang($dataPiutang);
-            // products
             foreach ($this->piutangProducts as $key => $product) {
                 $piutang->products()->attach($product['product_id'], ['qty' => $product['qty'], 'price' => $product['price']]);
+
+                $productModel = Product::find($product['product_id']);
+                if ($productModel) {
+                    if ($productModel->stock < $product['qty']) {
+                        // $this->addError('piutangProducts', 'Stock product ' . $productModel->name . ' tidak mencukupi.');
+                        $this->addError('piutangProducts.' . $key . '.qty', 'Stock produk ' . $productModel->name . ' tidak mencukupi.');
+                        return;
+                    }
+
+                    $productModel->decrement('stock', $product['qty']);
+                }
             }
             DB::commit();
             $this->redirect(PiutangProducts::class);
             session()->flash('success', 'Piutang created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            session()->flash('error', 'Piutang created successfully.');
+            session()->flash('error', 'Piutang created failed.');
             throw $e;
         }
     }
@@ -191,7 +199,6 @@ class PiutangProductCreate extends Component
 
     public function render()
     {
-
         return view('livewire.company.piutang-products.piutang-product-create');
     }
 }

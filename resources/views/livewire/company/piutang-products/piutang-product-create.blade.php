@@ -9,6 +9,7 @@
 
     <div class="p-4 bg-white dark:bg-neutral-900 shadow-xl rounded-xl sm:p-7">
         <form wire:submit='store'>
+            <x-validation-errors class="mb-4" />
             <div class="flex flex-col gap-5">
                 <flux:input
                     wire:model.lazy="nomorFaktur"
@@ -105,9 +106,9 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
                                     <flux:input wire:model.lazy="piutangProducts.{{ $index }}.qty"
                                                 type="number" :placeholder="__('Quantity')" />
+                                    <flux:error name="piutangProducts.{{ $index }}.qty" />
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
-
                                     @php
                                         $entanglePrice = "@entangle('piutangProducts.{$index}.price').defer";
                                     @endphp
@@ -136,6 +137,8 @@
                                             placeholder="Jumlah Bayar"
                                         />
                                     </div>                                
+
+                                    <flux:error name="piutangProducts.{{ $index }}.price" />
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                                     <flux:button wire:click='removeProduct({{ $index }})' variant="danger" class="mb-3 cursor-pointer">

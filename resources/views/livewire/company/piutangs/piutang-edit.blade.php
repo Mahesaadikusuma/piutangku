@@ -140,7 +140,6 @@
                         x-ref="tanggalKirim" x-model="value"
                         :label="__('Tanggal Kirim')" id="tanggalKirim"
                         type="date"
-                        required
                         autocomplete="tanggal-kirim"
                         :placeholder="__('Tanggal Kirim')"
                     />
