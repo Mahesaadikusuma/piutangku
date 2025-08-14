@@ -97,5 +97,201 @@
             </div>
             <!-- End Card -->
         </div>
+
+        <div class="">
+            <div class="">
+                <div class="mb-5">
+                    <flux:dropdown>
+                        <flux:button type="button" icon:trailing="chevron-down">Filter</flux:button>
+                        <flux:menu>
+                            <flux:menu.submenu heading="Status">
+                                <flux:select size="sm" wire:model.lazy="status"  placeholder="Pilih Status..." >
+                                    @foreach (\App\Enums\StatusType::cases() as $status)
+                                        <flux:select.option :value="$status->value">{{ $status->value }}</flux:select.option>
+                                    @endforeach
+                                </flux:select>
+                            </flux:menu.submenu>
+
+                            <flux:menu.submenu heading="Years">
+                                <flux:select size="sm" wire:model.lazy="years"  placeholder="Pilih Tahun..." >
+                                    @foreach ($getYears as $year)
+                                        <flux:select.option :value="$year">{{ $year }}</flux:select.option>
+                                    @endforeach
+                                </flux:select>
+                            </flux:menu.submenu>
+
+                            <flux:menu.separator />
+
+                            <flux:menu.item wire:click="resetFilter"  variant="danger" icon="x-mark">Reset</flux:menu.item>
+                        </flux:menu>
+                    </flux:dropdown>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 place-content-center">
+                    <div class="p-4 md:p-5 min-h-102.5 bg-white border border-gray-200 shadow-2xs rounded-xl dark:bg-[#343A3F] dark:text-white">
+                        <div class="" id="chart-area-piutang"></div>
+                    </div>
+                    <div class="p-4 md:p-5 min-h-102.5 bg-white border border-gray-200 shadow-2xs rounded-xl dark:bg-[#343A3F] dark:text-white" id="chart-pie-piutang"></div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+@script
+<script>
+    const totalPiutangByMonth = {!! json_encode($totalPiutangByMonth) !!};
+    const sisaPiutangByMonth = {!! json_encode($sisaPiutangByMonth) !!};
+    const chartCategories = {!! json_encode($month) !!};
+    const seriesPiutangCount = {!! json_encode($countPiutang) !!};
+    const labelsPiutangLabels = {!! json_encode($statusPiutang) !!};
+
+    const appearance = localStorage.getItem('flux.appearance') || 'system';
+    const isDark = appearance === 'dark' || 
+                (appearance === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    function getChartAreaPiutang(series1,series2,categories){
+        return {
+            series: [{
+                name: 'Total Piutang Terbayar',
+                data: series1
+            }, {
+                name: 'Sisa Piutang',
+                data: series2
+            }],
+            chart: {
+                height: 350,
+                type: 'area'
+            },
+            title: {
+                text: 'Piutangs',
+                align: 'left'
+            },
+            theme: {
+                mode: isDark ? 'dark' : 'light'
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'smooth'
+            },
+            xaxis: {
+                categories: categories
+            },
+            yaxis: {
+                labels: {
+                    formatter: function (val) {
+                        return new Intl.NumberFormat('id-ID', {
+                                style: 'currency',
+                                currency: 'IDR',
+                                minimumFractionDigits: 0
+                        }).format(val);
+                    }
+                }
+            },
+            tooltip: {
+                x: {
+                    format: 'dd/MM/yy HH:mm'
+                },
+                y: {
+                    formatter: function (val) {
+                        return new Intl.NumberFormat('id-ID', {
+                            style: 'currency',
+                            currency: 'IDR',
+                            minimumFractionDigits: 0
+                        }).format(val);
+                    }
+                }
+            }
+        }
+    }
+
+    const optionAreaPiutang = getChartAreaPiutang(totalPiutangByMonth,sisaPiutangByMonth,chartCategories);
+    const chartAreaPiutang = new ApexCharts(document.querySelector("#chart-area-piutang"), optionAreaPiutang);
+    chartAreaPiutang.render();
+    Livewire.on('filter', (data) => {
+        setTimeout(() => {
+            console.log(data)
+            chartAreaPiutang.updateSeries([{
+                data: data[0].totalPiutang,
+            },
+            {
+                data: data[0].sisaPiutang,
+            }]);
+        }, 300); // delay 300ms
+    });
+
+
+    function getChartPiePiutang(data, labels) {
+        return {
+            series: data,
+            chart: {
+                width: 500,
+                type: 'pie',
+            },
+            title: {
+                text: 'Distribusi Produk Piutang',
+                align: 'center'
+            },
+            theme: {
+                mode: isDark ? 'dark' : 'light'
+            },
+            labels: labels,
+            legend: {
+                position: 'bottom',
+                horizontalAlign: 'center',
+                show: true
+            },
+            tooltip: {
+                enabled: true // Matikan tooltip
+            },
+            responsive: [
+                {
+                    breakpoint: 1024,
+                    options: {
+                        chart: {
+                            width: 400
+                        },
+                        legend: {
+                            position: 'bottom',
+                            horizontalAlign: 'center',
+                            show: false
+                        }
+                    }
+                },
+                {
+                    breakpoint: 768,
+                    options: {
+                        chart: {
+                            width: 300
+                        },
+                        legend: {
+                            position: 'bottom',
+                            horizontalAlign: 'center',
+                            show: false
+                        }
+                    }
+                },
+                {
+                    breakpoint: 480,
+                    options: {
+                        chart: {
+                            width: 300
+                        },
+                        legend: {
+                            position: 'bottom',
+                            horizontalAlign: 'center',
+                            show: false
+                        }
+                    }
+                }
+            ]
+        }
+    }
+
+    const optionPiePiutang = getChartPiePiutang(seriesPiutangCount,labelsPiutangLabels);
+    const chartPiePiutang = new ApexCharts(document.querySelector("#chart-pie-piutang"), optionPiePiutang);
+    chartPiePiutang.render();
+
+</script>
+@endscript

@@ -14,7 +14,9 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\Computed;
 use Maatwebsite\Excel\Facades\Excel;
 
 #[Layout('components.layouts.app')]
@@ -30,6 +32,7 @@ class PiutangCustomers extends Component
     public $status = '';
     public $years = null;
     public $months = null;
+    public $productFilter = '';
 
     protected PiutangInterface $piutangRepo;
     public function boot(PiutangInterface $piutangRepo)
@@ -42,7 +45,7 @@ class PiutangCustomers extends Component
         return [
             'sortBy' => ['except' => 'newest', 'as' => 'sort'],
             'search' => ['as' => 'q',],
-            'customerFilter' => ['except' => '', 'as' => 'customer'],
+            'productFilter' => ['except' => '', 'as' => 'product'],
             'status' => ['except' => ''],
             'years' => ['except' => null, 'as' => 'year'],
             'months' => ['except' => null, 'as' => 'month'],
@@ -60,6 +63,14 @@ class PiutangCustomers extends Component
         $this->user = Auth::User();
     }
 
+    #[Computed()]
+    public function products()
+    {
+        return DB::table('products')
+            ->select('id', 'name')
+            ->get();
+    }
+
     public function downloadPdf()
     {
         $piutang = collect();
@@ -68,6 +79,7 @@ class PiutangCustomers extends Component
             $piutangs = $this->piutangRepo->paginateFilteredByUserPiutangs(
                 $this->search,
                 $this->status,
+                $this->productFilter,
                 $this->years,
                 $this->months,
                 $this->sortBy,
@@ -98,6 +110,7 @@ class PiutangCustomers extends Component
                     $this->piutangRepo,
                     $this->search,
                     $this->status,
+                    $this->productFilter,
                     $this->years,
                     $this->months,
                     $this->sortBy,
@@ -137,6 +150,7 @@ class PiutangCustomers extends Component
         $piutangs = $this->piutangRepo->paginateFilteredByUserPiutangs(
             $this->search,
             $this->status,
+            $this->productFilter,
             $this->years,
             $this->months,
             $this->sortBy,

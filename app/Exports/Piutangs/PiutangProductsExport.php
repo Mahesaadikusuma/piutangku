@@ -14,6 +14,7 @@ class PiutangProductsExport implements FromView, ShouldAutoSize
     protected PiutangRepository $piutangRepo;
     protected $search;
     protected $customerFilter;
+    protected $productFilter;
     protected $status;
     protected $years;
     protected $months;
@@ -25,6 +26,7 @@ class PiutangProductsExport implements FromView, ShouldAutoSize
         PiutangRepository $piutangRepo,
         $search = null,
         $customerFilter = null,
+        $productFilter = null,
         $status = null,
         $years = null,
         $months = null,
@@ -33,6 +35,7 @@ class PiutangProductsExport implements FromView, ShouldAutoSize
         $this->piutangRepo = $piutangRepo;
         $this->search = $search;
         $this->customerFilter = $customerFilter;
+        $this->productFilter = $productFilter;
         $this->status = $status;
         $this->years = $years;
         $this->months = $months;
@@ -45,6 +48,7 @@ class PiutangProductsExport implements FromView, ShouldAutoSize
             ->allFilteredProducts(
                 $this->search,
                 $this->customerFilter,
+                $this->productFilter,
                 $this->status,
                 $this->years,
                 $this->months,

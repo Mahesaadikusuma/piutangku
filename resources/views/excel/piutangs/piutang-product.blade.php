@@ -25,57 +25,57 @@
                                 style="border: 1px solid #000; padding: 5px; text-align: center;" valign="center">
                                 {{ $key + 1 }}
                             </td>
-                            <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px;"
+                            <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px; text-align: center;"
                                 valign="center">
                                 {{ $piutang->kode_piutang }}</td>
-                            <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px;"
+                            <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px; text-align: center;"
                                 valign="center">
                                 {{ $piutang->nomor_faktur }}</td>
-                            <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px;"
+                            <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px; text-align: center;"
                                 valign="center">
                                 {{ $piutang->nomor_order }}</td>
-                            <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px;"
+                            <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px; text-align: center;"
                                 valign="center">
                                 {{ $piutang->user->setting->full_name }}</td>
                         @endif
 
-                        <td style="border: 1px solid #000; padding: 5px;" valign="center">{{ $product->name }}</td>
-                        <td style="border: 1px solid #000; padding: 5px;" valign="center">{{ $product->pivot->qty }}
+                        <td style="border: 1px solid #000; padding: 5px; text-align: center;" valign="center">{{ $product->name }}</td>
+                        <td style="border: 1px solid #000; padding: 5px; text-align: center;" valign="center">{{ $product->pivot->qty }}
                         </td>
-                        <td style="border: 1px solid #000; padding: 5px;" valign="center">{{ $product->pivot->price }}
+                        <td style="border: 1px solid #000; padding: 5px; text-align: center;" valign="center">{{ $product->pivot->price }}
                         </td>
 
                         @if ($index === 0)
-                            <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px;"
+                            <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px; text-align: center;"
                                 valign="center">
                                 {{ $piutang->tanggal_transaction }}</td>
-                            <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px;"
+                            <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px; text-align: center;"
                                 valign="center">
                                 {{ $piutang->tanggal_jatuh_tempo }}</td>
-                            <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px;"
+                            <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px; text-align: center;"
                                 valign="center" align="right">
                                 {{ $piutang->jumlah_piutang }}</td>
-                            <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px;"
+                            <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px; text-align: center;"
                                 valign="center" align="right">
                                 {{ $piutang->sisa_piutang }}</td>
-                            <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px;"
+                            <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px; text-align: center;"
                                 valign="center">
                                 {{ $piutang->terms }} Hari</td>
                             @switch($piutang->status_pembayaran)
                                 @case(App\Enums\StatusType::PENDING->value)
-                                <td rowspan="{{ $productCount }}" valign="center" style="border: 1px solid #000; padding: 5px; color: orange">{{ $piutang->status_pembayaran }}</td>
+                                <td rowspan="{{ $productCount }}" valign="center" style="border: 1px solid #000; padding: 5px; text-align: center; color: black; background-color: orange;">{{ $piutang->status_pembayaran }}</td>
                                     @break
                                 @case(App\Enums\StatusType::SUCCESS->value)
-                                    <td rowspan="{{ $productCount }}" valign="center" style="border: 1px solid #000; padding: 5px; color: green">{{ $piutang->status_pembayaran }}</td>
+                                    <td rowspan="{{ $productCount }}" valign="center" style="border: 1px solid #000; padding: 5px; text-align: center; color: black; background-color: green;">{{ $piutang->status_pembayaran }}</td>
                                     @break
             
                                 @case(App\Enums\StatusType::FAILED->value)
-                                    <td rowspan="{{ $productCount }}" valign="center" style="border: 1px solid #000; padding: 5px; color: red">{{ $piutang->status_pembayaran }}</td>
+                                    <td rowspan="{{ $productCount }}" valign="center" style="border: 1px solid #000; padding: 5px; text-align: center; color: black; background-color: red;">{{ $piutang->status_pembayaran }}</td>
                                     @break
                                 @default
-                                <td rowspan="{{ $productCount }}" valign="center" style="border: 1px solid #000; padding: 5px; color: blue">{{ $piutang->status_pembayaran }}</td>
+                                <td rowspan="{{ $productCount }}" valign="center" style="border: 1px solid #000; padding: 5px; text-align: center; color: black; background-color: blue;">{{ $piutang->status_pembayaran }}</td>
                             @endswitch
-                            <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px;"
+                            <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px; text-align: center;"
                                 valign="center">
                                 {{ $piutang->tanggal_lunas ?? 'Belum Lunas' }}</td>
                             {{-- <td rowspan="{{ $productCount }}" style="border: 1px solid #000; padding: 5px;"

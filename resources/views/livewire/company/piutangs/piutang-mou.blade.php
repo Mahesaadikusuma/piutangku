@@ -128,12 +128,15 @@
                 <div wire:ignore>
                     <label for="editor">Isi Perjanjian</label>
                     <div id="editor" class="min-h-[200px]">
-                        {!! $piutang->agreement->content !!}
+                        @if (optional($piutang->agreement)->content)
+                            {!! $piutang->agreement->content !!}
+                        @endif
                     </div>
                 </div>
 
                 @if ($piutang->agreement)
-                    <flux:input   type="file" wire:model="form.generatePdf" label="Simpan Mou"/>
+                    <flux:input type="file" wire:model="form.generatePdfFile" label="Simpan Mou" description:trailing="File MoU yang disepakati. Hanya menerima PDF, ukuran maksimal 2MB." />
+                    <flux:input type="file" wire:model="form.lampiranFile" label="lampiran Terlampir" description:trailing="Lampiran pendukung untuk dokumen MoU. Hanya menerima PDF, ukuran maksimal 2MB." />
                 @endif
 
                 <flux:button type="submit" variant="primary" class="w-full">Save changes</flux:button>

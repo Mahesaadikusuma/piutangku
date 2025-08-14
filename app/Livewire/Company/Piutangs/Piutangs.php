@@ -33,6 +33,12 @@ class Piutangs extends Component
     public $years = null;
     public $months = null;
 
+    protected PiutangInterface $piutangRepo;
+    public function boot(PiutangInterface $piutangRepo)
+    {
+        $this->piutangRepo = $piutangRepo;
+    }
+
     protected function queryString()
     {
         return [
@@ -50,12 +56,6 @@ class Piutangs extends Component
     {
         $this->reset(['search', 'sortBy', 'perPage', 'customerFilter', 'status', 'years', 'months']);
         $this->resetPage();
-    }
-
-    protected PiutangInterface $piutangRepo;
-    public function boot(PiutangInterface $piutangRepo)
-    {
-        $this->piutangRepo = $piutangRepo;
     }
 
     #[On('reloadPiutangs')]
@@ -106,7 +106,6 @@ class Piutangs extends Component
         }
     }
 
-
     public function downloadPdf()
     {
         $piutang = collect();
@@ -148,7 +147,6 @@ class Piutangs extends Component
             'piutang' => $piutang,
             'now' => $now,
         ]);
-
 
         return response()->streamDownload(function () use ($pdf) {
             echo  $pdf->stream();

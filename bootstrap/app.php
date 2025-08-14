@@ -27,5 +27,6 @@ return Application::configure(basePath: dirname(__DIR__))
     })->withSchedule(function (Schedule $schedule) {
         // $schedule->job(new SendPaymentReminderEmailJob())->everyMinute();
         // daily everyThreeMinutes
+        // weekly
         $schedule->command(PiutangReminder::class)->everyMinute();
     })->create();

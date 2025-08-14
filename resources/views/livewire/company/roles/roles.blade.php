@@ -64,9 +64,11 @@
                             {{ $role->name }}
                         </td>
                         <td class="px-6 py-4">
-                            <div wire:ignore class="flex items-center gap-3">
-                                <flux:button size="sm" variant="primary" class="cursor-pointer" wire:click="edit({{ $role->id }})">Edit</flux:button>
-                                <flux:button size="sm" variant="danger" class="cursor-pointer" wire:click="delete({{ $role->id }})">Delete</flux:button>
+                            <div class="flex items-center gap-3">
+                                @role('admin')
+                                    <flux:button size="sm" variant="primary" class="cursor-pointer" wire:click="edit({{ $role->id }})">Edit</flux:button>
+                                    <flux:button size="sm" variant="danger" class="cursor-pointer" wire:click="delete({{ $role->id }})">Delete</flux:button>
+                                @endrole
                             </div>
                         </td>
                     </tr>

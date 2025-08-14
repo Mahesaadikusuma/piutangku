@@ -32,9 +32,15 @@ class PiutangMouForm extends Form
     public $browPoss;
     public $agreeDate;
     public $content;
-    public $generatePdf;
-
     public $agreement;
+
+    // Path file lama (untuk ditampilkan di form)
+    public $lampiranPath;
+    public $generatePdfPath;
+
+    // File upload baru
+    public $generatePdfFile;
+    public $lampiranFile;
 
 
     protected function rules()
@@ -52,6 +58,8 @@ class PiutangMouForm extends Form
             'browPoss' => 'nullable|string|max:100',
             'agreeDate' => 'required|date',
             'content' => 'required|string|min:10',
+            'lampiranFile' => 'nullable|file|mimes:pdf|max:2048',
+            'generatePdfFile' => 'nullable|file|mimes:pdf|max:2048',
         ];
     }
 
@@ -67,6 +75,10 @@ class PiutangMouForm extends Form
             'agreeDate.required' => 'Tanggal perjanjian wajib diisi.',
             'content.required' => 'Isi perjanjian wajib diisi.',
             'content.min' => 'Isi perjanjian minimal 10 karakter.',
+            'generatePdf.mimes' => 'MoU harus berformat pdf.',
+            'generatePdf.max' => 'MoU maksimal 2MB.',
+            'lampiranFile.max' => 'Lampiran maksimal 2MB.',
+            'lampiranFile.mimes' => 'Lampiran harus berformat pdf.',
         ];
     }
 
@@ -91,8 +103,10 @@ class PiutangMouForm extends Form
                 'browPoss' => $this->agreement->borrower_position,
                 'agreeDate' => $this->agreement->agreement_date,
                 'content' => $this->agreement->content,
-                'generatePdf' => $this->agreement->generated_pdf
             ]);
+
+            $this->lampiranPath = $this->agreement->agreement_lampiran;
+            $this->generatePdfPath = $this->agreement->generated_pdf;
         } else {
             $this->browName = $piutang->user->name;
             $this->browAddress = $piutang->user->setting->address;
@@ -103,38 +117,48 @@ class PiutangMouForm extends Form
 
     public function save()
     {
-        $this->validate();
-        $piutangAgreement = PiutangAgreement::where('piutang_id', $this->piutang_id)->first();
-        $data = [
-            'agreement_number' => $this->nomorDokument,
-            'agreement_lampiran' => $this->lampiran,
-            'agreement_perihal' => $this->perihal,
-            'leader_company' => $this->leadCompany,
-            'leader_name' => $this->leadName,
-            'leader_position' => $this->leadPoss,
-            'borrower_company' => $this->browCompany,
-            'borrower_name' => $this->browName,
-            'borrower_address' => $this->browAddress,
-            'borrower_position' => $this->browPoss,
-            'agreement_date' => $this->agreeDate,
-            'content' => $this->content,
-        ];
+        try {
+            $this->validate();
+            $piutangAgreement = PiutangAgreement::where('piutang_id', $this->piutang_id)->first();
 
-        if ($this->generatePdf instanceof UploadedFile) {
-            // Hapus file lama jika ada
-            if ($piutangAgreement && $piutangAgreement->generated_pdf && Storage::disk('public')->exists($piutangAgreement->generated_pdf)) {
-                Storage::disk('public')->delete($piutangAgreement->generated_pdf);
+            $data = [
+                'agreement_number' => $this->nomorDokument,
+                'agreement_lampiran' => $this->lampiran,
+                'agreement_perihal' => $this->perihal,
+                'leader_company' => $this->leadCompany,
+                'leader_name' => $this->leadName,
+                'leader_position' => $this->leadPoss,
+                'borrower_company' => $this->browCompany,
+                'borrower_name' => $this->browName,
+                'borrower_address' => $this->browAddress,
+                'borrower_position' => $this->browPoss,
+                'agreement_date' => $this->agreeDate,
+                'content' => $this->content,
+            ];
+
+            // Simpan file lampiran baru
+            if ($this->lampiranFile instanceof UploadedFile) {
+                if ($piutangAgreement && $piutangAgreement->lampiran && Storage::disk('public')->exists($piutangAgreement->lampiran)) {
+                    Storage::disk('public')->delete($piutangAgreement->lampiran);
+                }
+                $data['lampiran'] = $this->lampiranFile->store('piutangs/mou/lampiran', 'public');
             }
 
-            // Simpan file baru
-            $data['generated_pdf'] = $this->generatePdf->store('piutangs/mou', 'public');
+            // Simpan file MoU baru
+            if ($this->generatePdfFile instanceof UploadedFile) {
+                if ($piutangAgreement && $piutangAgreement->generated_pdf && Storage::disk('public')->exists($piutangAgreement->generated_pdf)) {
+                    Storage::disk('public')->delete($piutangAgreement->generated_pdf);
+                }
+                $data['generated_pdf'] = $this->generatePdfFile->store('piutangs/mou', 'public');
+            }
+
+            PiutangAgreement::updateOrCreate(
+                ['piutang_id' => $this->piutang_id],
+                $data
+            );
+        } catch (\Exception $e) {
+            Log::info("Error: " . $e->getMessage());
+            throw $e;
         }
-
-        Log::info("generatePdf: " . $this->generatePdf);
-
-        PiutangAgreement::updateOrCreate(
-            ['piutang_id' => $this->piutang_id],
-            $data
-        );
     }
 }

@@ -33,6 +33,17 @@
                             @endforeach
                         </flux:select>
                     </flux:menu.submenu>
+                    <flux:menu.submenu heading="Products">
+                        <flux:select size="sm" wire:model.lazy="productFilter"  placeholder="Pilih products..." >
+                            @forelse ($this->products as $product)                    
+                            <flux:select.option :value="$product->id">
+                                {{ $product->name }}
+                            </flux:select.option>
+                            @empty
+                            <flux:select.option value="">Not Found Customer</flux:select.option>
+                            @endforelse
+                        </flux:select>
+                    </flux:menu.submenu>
                     <flux:menu.submenu heading="Years">
                         <flux:select size="sm" wire:model.lazy="years"  placeholder="Pilih Tahun..." >
                             @foreach ($getYears as $year)

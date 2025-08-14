@@ -15,6 +15,7 @@ class piutangByUser implements FromView, ShouldAutoSize
     protected PiutangRepository $piutangRepo;
     protected $search;
     protected $status;
+    protected $productFilter;
     protected $years;
     protected $months;
     protected $sortBy;
@@ -25,6 +26,7 @@ class piutangByUser implements FromView, ShouldAutoSize
         PiutangRepository $piutangRepo,
         $search = null,
         $status = null,
+        $productFilter = null,
         $years = null,
         $months = null,
         $sortBy = 'newest'
@@ -32,6 +34,7 @@ class piutangByUser implements FromView, ShouldAutoSize
         $this->piutangRepo = $piutangRepo;
         $this->search = $search;
         $this->status = $status;
+        $this->productFilter = $productFilter;
         $this->years = $years;
         $this->months = $months;
         $this->sortBy = $sortBy;
@@ -43,6 +46,7 @@ class piutangByUser implements FromView, ShouldAutoSize
             ->allFilteredByUserPiutangs(
                 $this->search,
                 $this->status,
+                $this->productFilter,
                 $this->years,
                 $this->months,
                 $this->sortBy

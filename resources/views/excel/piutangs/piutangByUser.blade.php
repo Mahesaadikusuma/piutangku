@@ -41,7 +41,7 @@
                                 <td valign="center" style="border: 1px solid #000; padding: 5px;" rowspan="{{ $productCount }}">{{ $piutang->tanggal_jatuh_tempo }}</td>
                                 <td valign="center" align="right" style="border: 1px solid #000; padding: 5px;" rowspan="{{ $productCount }}">{{ number_format($piutang->jumlah_piutang, 0, ',', '.') }}</td>
                                 <td valign="center" align="right" style="border: 1px solid #000; padding: 5px;" rowspan="{{ $productCount }}">{{ number_format($piutang->sisa_piutang, 0, ',', '.') }}</td>
-                                <td valign="center" style="border: 1px solid #000; padding: 5px;" rowspan="{{ $productCount }}">{{ $piutang->terms }}</td>
+                                <td valign="center" style="border: 1px solid #000; padding: 5px;" rowspan="{{ $productCount }}">{{ $piutang->terms }} Hari</td>
                                 <td valign="center" style="border: 1px solid #000; padding: 5px;" rowspan="{{ $productCount }}">{{ $piutang->status_pembayaran }}</td>
                                 <td valign="center" style="border: 1px solid #000; padding: 5px;" rowspan="{{ $productCount }}">{{ $piutang->tanggal_lunas ?? 'Belum Lunas' }}</td>
                             @endif

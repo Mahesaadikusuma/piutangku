@@ -104,7 +104,7 @@
 
 
             @auth
-            <div class="relative flex flex-wrap items-center gap-x-1.5 md:ps-2.5 mt-1 md:mt-0 md:ms-1.5 before:block before:absolute  before:bg-gray-300 before:-translate-y-1/2 dark:before:bg-neutral-700">
+            <div class="relative flex flex-wrap lg:flex-nowrap items-center gap-x-1.5 md:ps-2.5 mt-1 md:mt-0 md:ms-1.5 before:block before:absolute  before:bg-gray-300 before:-translate-y-1/2 dark:before:bg-neutral-700">
               @role('admin|company')
               <flux:button  variant="primary" color="indigo" size="sm" class="cursor-pointer" :href="route('dashboard')">
                 Dashboard

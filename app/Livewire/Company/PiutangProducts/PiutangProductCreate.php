@@ -8,6 +8,7 @@ use App\Repository\Interface\PiutangInterface;
 use App\Repository\PiutangRepository;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -123,14 +124,25 @@ class PiutangProductCreate extends Component
                 $piutang->products()->attach($product['product_id'], ['qty' => $product['qty'], 'price' => $product['price']]);
 
                 $productModel = Product::find($product['product_id']);
+                Log::info($productModel);
                 if ($productModel) {
-                    if ($productModel->stock < $product['qty']) {
-                        // $this->addError('piutangProducts', 'Stock product ' . $productModel->name . ' tidak mencukupi.');
+                    $stock = (int) str_replace(',', '', $productModel->stock);
+                    $qty = (int) ($product['qty'] ?? 0);
+
+                    Log::info('Stock & Qty Check', [
+                        'stock' => $stock,
+                        'qty' => $qty
+                    ]);
+                    if ($qty > $stock) {
                         $this->addError('piutangProducts.' . $key . '.qty', 'Stock produk ' . $productModel->name . ' tidak mencukupi.');
+                        DB::rollBack();
                         return;
                     }
 
-                    $productModel->decrement('stock', $product['qty']);
+                    if ($qty > 0) {
+                        $newStock = $stock - $qty;
+                        $productModel->update(['stock' => $newStock]);
+                    }
                 }
             }
             DB::commit();

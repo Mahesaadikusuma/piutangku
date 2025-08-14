@@ -30,6 +30,7 @@ class PiutangProducts extends Component
     public $perPage = 10;
     public $sortBy = 'newest';
     public $customerFilter = '';
+    public $productFilter = '';
     public $status = '';
     public $years = null;
     public $months = null;
@@ -40,6 +41,7 @@ class PiutangProducts extends Component
             'sortBy' => ['except' => 'newest', 'as' => 'sort'],
             'search' => ['as' => 'q',],
             'customerFilter' => ['except' => '', 'as' => 'customer'],
+            'productFilter' => ['except' => '', 'as' => 'product'],
             'status' => ['except' => ''],
             'years' => ['except' => null, 'as' => 'year'],
             'months' => ['except' => null, 'as' => 'month'],
@@ -48,7 +50,7 @@ class PiutangProducts extends Component
 
     public function resetFilter()
     {
-        $this->reset(['search', 'sortBy', 'perPage', 'customerFilter', 'status', 'years', 'months']);
+        $this->reset(['search', 'sortBy', 'perPage', 'customerFilter', 'productFilter', 'status', 'years', 'months']);
         $this->resetPage();
     }
 
@@ -64,6 +66,7 @@ class PiutangProducts extends Component
         return $this->piutangRepo->paginateFilteredProducts(
             $this->search,
             $this->customerFilter,
+            $this->productFilter,
             $this->status,
             $this->years,
             $this->months,
@@ -81,6 +84,14 @@ class PiutangProducts extends Component
             ->get();
     }
 
+    #[computed()]
+    public function products()
+    {
+        return DB::table('products')
+            ->select('id', 'name')
+            ->get();
+    }
+
     public function downloadExcel()
     {
         try {
@@ -89,6 +100,7 @@ class PiutangProducts extends Component
                     $this->piutangRepo,
                     $this->search,
                     $this->customerFilter,
+                    $this->productFilter,
                     $this->status,
                     $this->years,
                     $this->months,
@@ -114,6 +126,7 @@ class PiutangProducts extends Component
             $piutangs = $this->piutangRepo->paginateFilteredProducts(
                 $this->search,
                 $this->customerFilter,
+                $this->productFilter,
                 $this->status,
                 $this->years,
                 $this->months,
@@ -164,13 +177,13 @@ class PiutangProducts extends Component
         $piutangs = $this->piutangRepo->paginateFilteredProducts(
             $this->search,
             $this->customerFilter,
+            $this->productFilter,
             $this->status,
             $this->years,
             $this->months,
             $this->sortBy,
             $this->perPage
         );
-
         $getYears = Helpers::getYears();
         $getMonths = Helpers::getMonths();
         return view('livewire.company.piutang-products.piutang-products', compact('piutangs', 'getYears', 'getMonths'));

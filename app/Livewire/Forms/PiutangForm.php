@@ -191,10 +191,16 @@ class PiutangForm extends Form
 
     public function hitungJumlahPpn()
     {
-        $jumlah = floatval($this->jumlahFaktur ?? 0);
+        $grandTotal = floatval($this->jumlahFaktur ?? 0);
         $ppn = floatval($this->ppn ?? 0);
 
-        $this->jumlahPpn = round($jumlah * ($ppn / 100), 2);
-        $this->grandTotal = $jumlah + $this->jumlahPpn;
+        if ($ppn > 0) {
+            $hargaDasar = round($grandTotal / (1 + ($ppn / 100)), 2);
+            $this->jumlahPpn = $grandTotal - $hargaDasar;
+            $this->grandTotal = $grandTotal;
+        } else {
+            $this->jumlahPpn = 0;
+            $this->grandTotal = $grandTotal;
+        }
     }
 }

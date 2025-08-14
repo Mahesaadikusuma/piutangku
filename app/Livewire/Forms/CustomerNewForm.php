@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
 use Illuminate\Validation\Rules\Password;
+use Spatie\Permission\Models\Role;
 
 class CustomerNewForm extends Form
 {
@@ -122,6 +123,11 @@ class CustomerNewForm extends Form
                 'user_id' => $user->id,
                 'setting_id' => $setting->id,
             ]);
+
+            $roleCustomer = Role::where('name', 'customer')->first();
+            if ($roleCustomer) {
+                $user->assignRole($roleCustomer);
+            }
             // $this->reset();
             session()->flash('success', 'Customer created successfully');
         } catch (Exception $e) {

@@ -82,6 +82,7 @@ class PiutangRepository implements PiutangInterface
     public function getFilteredQueryProducts(
         ?string $search = null,
         ?string $customerFilter = null,
+        ?string $productFilter = null,
         ?string $status = null,
         ?int $year = null,
         ?int $month = null,
@@ -99,6 +100,11 @@ class PiutangRepository implements PiutangInterface
                 });
             })
             ->when($customerFilter !== '', fn($q) => $q->where('user_id', $customerFilter))
+            ->when($productFilter !== '', function ($q) use ($productFilter) {
+                $q->whereHas('products', function ($query) use ($productFilter) {
+                    $query->where('piutang_products.product_id', $productFilter);
+                });
+            })
             ->when($status !== '', fn($q) => $q->where('status_pembayaran', $status))
             ->when($year, fn($q) => $q->whereYear('tanggal_transaction', $year))
             ->when($month, fn($q) => $q->whereMonth('tanggal_transaction', $month))
@@ -109,6 +115,7 @@ class PiutangRepository implements PiutangInterface
     public function paginateFilteredProducts(
         $search = null,
         $customerFilter = null,
+        $productFilter = null,
         $status = null,
         $year = null,
         $month = null,
@@ -118,6 +125,7 @@ class PiutangRepository implements PiutangInterface
         return $this->getFilteredQueryProducts(
             $search,
             $customerFilter,
+            $productFilter,
             $status,
             $year,
             $month,
@@ -128,6 +136,7 @@ class PiutangRepository implements PiutangInterface
     public function allFilteredProducts(
         $search,
         $customerFilter,
+        $productFilter,
         $statusFilter,
         $year,
         $month,
@@ -136,6 +145,7 @@ class PiutangRepository implements PiutangInterface
         return $this->getFilteredQueryProducts(
             $search,
             $customerFilter,
+            $productFilter,
             $statusFilter,
             $year,
             $month,
@@ -214,40 +224,37 @@ class PiutangRepository implements PiutangInterface
             $query->where('users.name', 'like', '%' . $search . '%');
         }
         return $query;
-
-
-        // ini tanggal_jatuh_tempo - tanggal_transaction
-        // $data = DB::query()
-        //         ->from('piutangs')
-        //         ->join('users', 'piutangs.user_id', '=', 'users.id')
-        //         ->join('customers', 'customers.user_id', '=', 'users.id')
-        //         ->select(
-        //             'users.id as user_id',
-        //             'users.name as user_name',
-        //             'customers.uuid as customer_uuid',
-        //             DB::raw('FORMAT(SUM(jumlah_piutang), 0) as total_piutang'),
-        //             DB::raw('FORMAT(SUM(sisa_piutang), 0) as sisa_piutang'),
-        //             DB::raw('FORMAT(SUM(CASE 
-        //         WHEN DATEDIFF(tanggal_jatuh_tempo, tanggal_transaction) BETWEEN 0 AND 30 
-        //         THEN jumlah_piutang ELSE 0 END), 0) as age_0_30'),
-        //             DB::raw('FORMAT(SUM(CASE 
-        //         WHEN DATEDIFF(tanggal_jatuh_tempo, tanggal_transaction) BETWEEN 31 AND 60 
-        //         THEN jumlah_piutang ELSE 0 END), 0) as age_31_60'),
-        //             DB::raw('FORMAT(SUM(CASE 
-        //         WHEN DATEDIFF(tanggal_jatuh_tempo, tanggal_transaction) BETWEEN 61 AND 90 
-        //         THEN jumlah_piutang ELSE 0 END), 0) as age_61_90'),
-        //             DB::raw('FORMAT(SUM(CASE 
-        //         WHEN DATEDIFF(tanggal_jatuh_tempo, tanggal_transaction) > 90 
-        //         THEN jumlah_piutang ELSE 0 END), 0) as age_90_plus'),
-        //         )
-        //         ->groupBy('users.id', 'users.name', 'customers.uuid')
-        //         ->paginate(10);
-        //     return $data;
     }
 
     public function agePiutangPerCustomerPaginate(int $limit = 25, $search = null)
     {
         return $this->agePiutangPerCustomerQuery($search)->groupBy('users.id', 'users.name', 'customers.uuid', 'customers.code_customer')->paginate($limit);
+    }
+
+    public function getPiutangProductCounts()
+    {
+        $productCounts = DB::table('piutang_products')
+            ->select('product_id', DB::raw('COUNT(*) as total'))
+            ->groupBy('product_id')
+            ->pluck('total', 'product_id')
+            ->toArray();
+        return $productCounts;
+    }
+
+    public function getPiutangTotals()
+    {
+        return DB::table('piutangs')
+            ->select('status_pembayaran as status', DB::raw('COUNT(*) as total'))
+            ->groupBy('status_pembayaran')
+            ->get();
+    }
+    public function getPiutangTotalsByUser()
+    {
+        return DB::table('piutangs')
+            ->where('user_id', Auth::user()->id)
+            ->select('status_pembayaran as status', DB::raw('COUNT(*) as total'))
+            ->groupBy('status_pembayaran')
+            ->get();
     }
 
 
@@ -299,9 +306,53 @@ class PiutangRepository implements PiutangInterface
         return $formattedNumber;
     }
 
+    public function getTotalPiutangPerMonth($status = null, $years = null): array
+    {
+        $raw = Piutang::query()
+            ->selectRaw('MONTH(tanggal_transaction) as month, SUM(jumlah_piutang) as total')
+            ->when($status !== '', fn($q) => $q->where('status_pembayaran', $status))
+            ->when($years, fn($q) => $q->whereYear('tanggal_transaction', $years))
+            ->groupByRaw('MONTH(tanggal_transaction)')
+            ->orderByRaw('MONTH(tanggal_transaction)')
+            ->pluck('total', 'month')
+            ->toArray();
+
+        return $raw;
+    }
+
+    public function getTotalJumlahPiutangPerMonthByUser($status = null, $years = null): array
+    {
+        $raw = Piutang::query()
+            ->where('user_id', Auth::user()->id)
+            ->selectRaw('MONTH(tanggal_transaction) as month, SUM(jumlah_piutang) as total')
+            ->when($status !== '', fn($q) => $q->where('status_pembayaran', $status))
+            ->when($years, fn($q) => $q->whereYear('tanggal_transaction', $years))
+            ->groupByRaw('MONTH(tanggal_transaction)')
+            ->orderByRaw('MONTH(tanggal_transaction)')
+            ->pluck('total', 'month')
+            ->toArray();
+
+        return $raw;
+    }
+    public function getTotalSisaPiutangPerMonthByUser($status = null, $years = null): array
+    {
+        $raw = Piutang::query()
+            ->where('user_id', Auth::user()->id)
+            ->selectRaw('MONTH(tanggal_transaction) as month, SUM(sisa_piutang) as total')
+            ->when($status !== '', fn($q) => $q->where('status_pembayaran', $status))
+            ->when($years, fn($q) => $q->whereYear('tanggal_transaction', $years))
+            ->groupByRaw('MONTH(tanggal_transaction)')
+            ->orderByRaw('MONTH(tanggal_transaction)')
+            ->pluck('total', 'month')
+            ->toArray();
+
+        return $raw;
+    }
+
     public function getFilteredQueryByUserPiutangs(
         ?string $search = null,
         ?string $status = null,
+        ?string $productFilter = null,
         ?int $year = null,
         ?int $month = null,
         string $sortBy = 'newest'
@@ -318,6 +369,11 @@ class PiutangRepository implements PiutangInterface
                 });
             })
             ->when($status !== '', fn($q) => $q->where('status_pembayaran', $status))
+            ->when($productFilter !== '', function ($q) use ($productFilter) {
+                $q->whereHas('products', function ($query) use ($productFilter) {
+                    $query->where('piutang_products.product_id', $productFilter);
+                });
+            })
             ->when($year, fn($q) => $q->whereYear('tanggal_transaction', $year))
             ->when($month, fn($q) => $q->whereMonth('tanggal_transaction', $month))
             ->when($sortBy === 'latest', fn($q) => $q->oldest())
@@ -327,6 +383,7 @@ class PiutangRepository implements PiutangInterface
     public function paginateFilteredByUserPiutangs(
         $search = null,
         $status = null,
+        $productFilter = null,
         $year = null,
         $month = null,
         $sortBy = 'newest',
@@ -335,6 +392,7 @@ class PiutangRepository implements PiutangInterface
         return $this->getFilteredQueryByUserPiutangs(
             $search,
             $status,
+            $productFilter,
             $year,
             $month,
             $sortBy,
@@ -344,6 +402,7 @@ class PiutangRepository implements PiutangInterface
     public function allFilteredByUserPiutangs(
         $search,
         $statusFilter,
+        $productFilter,
         $year,
         $month,
         $sortBy = 'newest',
@@ -351,6 +410,7 @@ class PiutangRepository implements PiutangInterface
         return $this->getFilteredQueryByUserPiutangs(
             $search,
             $statusFilter,
+            $productFilter,
             $year,
             $month,
             $sortBy

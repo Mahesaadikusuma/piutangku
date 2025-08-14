@@ -35,7 +35,8 @@ class ProductForm extends Form
     protected function rules()
     {
         return [
-            'code' => 'required|string|unique:products,kode_product|min:3|max:100',
+            // 'code' => 'required|string|unique:products,kode_product|min:3|max:100',
+            'code' => 'required|string|unique:products,kode_product,' . $this->product->id,
             'name' => 'required|string|min:3|max:100',
             'category_id' => 'required|exists:categories,id',
             'description' => 'nullable|string|min:5',

@@ -162,6 +162,67 @@
             />
 
             <flux:heading level="4" size="lg">Piutang Transaction</flux:heading>
+            @if ($piutang->paymentPiutangs->count() > 0)
+            <div class="border border-gray-200 rounded-lg overflow-hidden dark:border-neutral-700">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
+                  <thead class="bg-gray-50 dark:bg-neutral-700">
+                    <tr>
+                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-400">No</th>
+                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-400">Kode Transaction</th>
+                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-400">Satatus</th>
+                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-400">Transaction Total</th>
+                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-400">Created At</th>
+                      <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-400">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-200 dark:divide-neutral-700">
+                        @forelse ($piutang->paymentPiutangs as $key => $paymentPiutang)
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
+                                    {{ $loop->iteration }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
+                                    {{ $paymentPiutang->transaction->kode }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
+                                    @switch($paymentPiutang->transaction->status)
+                                        @case(App\Enums\StatusType::PENDING->value)
+                                        <flux:badge variant="solid" color="orange">{{ $paymentPiutang->transaction->status }}</flux:badge>
+                                            @break
+                                        @case(App\Enums\StatusType::SUCCESS->value)
+                                            <flux:badge variant="solid" color="green">{{ $paymentPiutang->transaction->status }}</flux:badge>
+                                            @break
+                            
+                                        @case(App\Enums\StatusType::FAILED->value)
+                                            <flux:badge variant="solid" color="red">{{ $paymentPiutang->transaction->status }}</flux:badge>
+                                            @break
+                                        @default
+                                        <flux:badge variant="solid" color="Blue">{{ $paymentPiutang->transaction->status }}</flux:badge>
+                                    @endswitch 
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
+                                    {{ number_format($paymentPiutang->amount) }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
+                                    {{ Carbon\Carbon::parse($paymentPiutang->transaction->created_at)->translatedFormat('d F Y') }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
+                                    <div class="flex items-center gap-5">
+                                        {{-- @if ($transaction->paymentPiutangs->count() > 0)
+                                            <flux:button size="xs" variant="primary" class="cursor-pointer" :href="route('transaction.show',$transaction->id)">Show</flux:button>
+                                        @endif --}}
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                        <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200">
+                            <td colspan="6" class="text-center text-gray-900 dark:text-white py-5">No Record Found</td>
+                        </tr>
+                        @endforelse
+                  </tbody>
+                </table>
+            </div>
+            @else 
             <div class="border border-gray-200 rounded-lg overflow-hidden dark:border-neutral-700">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
                   <thead class="bg-gray-50 dark:bg-neutral-700">
@@ -221,6 +282,8 @@
                   </tbody>
                 </table>
             </div>
+            @endif
+            
         </div>
 
         @if ($piutang->agreement && $piutang->agreement->generated_pdf)

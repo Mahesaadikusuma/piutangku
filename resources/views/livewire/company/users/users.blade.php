@@ -104,8 +104,10 @@
                                 {{ $user->getPermissionNames()->implode(', ') ?? 'N/A' }}
                             </td>
                             <td class="px-6 py-4">
-                                <div wire:ignore class="flex items-center gap-3">
+                                <div class="flex items-center gap-3">
+                                    @role('admin')
                                     <flux:button size="sm" variant="primary" class="cursor-pointer" wire:click="edit({{ $user->id }})">Edit</flux:button>
+                                    @endrole
                                 </div>
                             </td>
                         </tr>

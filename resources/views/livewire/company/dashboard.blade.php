@@ -137,39 +137,45 @@
             <!-- End Card -->
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Card -->
-            <div class="p-4 md:p-5 min-h-102.5 flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl dark:bg-[#343A3F] dark:text-white">
-                <flux:dropdown class="mb-4">
-                    <flux:button type="button" icon:trailing="chevron-down">Filter</flux:button>
-                    <flux:menu>
-                        <flux:menu.submenu heading="Status">
-                            <flux:select size="sm" wire:model.lazy="status"  placeholder="Pilih Status..." >
-                                @foreach (\App\Enums\StatusType::cases() as $status)
-                                    <flux:select.option :value="$status->value">{{ $status->value }}</flux:select.option>
-                                @endforeach
-                            </flux:select>
-                        </flux:menu.submenu>
+        <div class="">
+            <div class="">
+                <div class="mb-5">
+                    <flux:dropdown>
+                        <flux:button type="button" icon:trailing="chevron-down">Filter</flux:button>
+                        <flux:menu>
+                            <flux:menu.submenu heading="Status">
+                                <flux:select size="sm" wire:model.lazy="status"  placeholder="Pilih Status..." >
+                                    @foreach (\App\Enums\StatusType::cases() as $status)
+                                        <flux:select.option :value="$status->value">{{ $status->value }}</flux:select.option>
+                                    @endforeach
+                                </flux:select>
+                            </flux:menu.submenu>
 
-                        <flux:menu.submenu heading="Years">
-                            <flux:select size="sm" wire:model.lazy="years"  placeholder="Pilih Tahun..." >
-                                @foreach ($getYears as $year)
-                                    <flux:select.option :value="$year">{{ $year }}</flux:select.option>
-                                @endforeach
-                            </flux:select>
-                        </flux:menu.submenu>
+                            <flux:menu.submenu heading="Years">
+                                <flux:select size="sm" wire:model.lazy="years"  placeholder="Pilih Tahun..." >
+                                    @foreach ($getYears as $year)
+                                        <flux:select.option :value="$year">{{ $year }}</flux:select.option>
+                                    @endforeach
+                                </flux:select>
+                            </flux:menu.submenu>
 
-                        <flux:menu.separator />
+                            <flux:menu.separator />
 
-                        <flux:menu.item wire:click="resetFilter"  variant="danger" icon="x-mark">Reset</flux:menu.item>
-                    </flux:menu>
-                </flux:dropdown>
+                            <flux:menu.item wire:click="resetFilter"  variant="danger" icon="x-mark">Reset</flux:menu.item>
+                        </flux:menu>
+                    </flux:dropdown>
+                </div>
 
-                <div class="" id="chart-month"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 place-content-center">
+                    <div class="p-4 md:p-5 min-h-102.5 bg-white border border-gray-200 shadow-2xs rounded-xl dark:bg-[#343A3F] dark:text-white">
+                        <div class="" id="chart-month"></div>
+                    </div>
+                    <div class="p-4 md:p-5 min-h-102.5 bg-white border border-gray-200 shadow-2xs rounded-xl dark:bg-[#343A3F] dark:text-white" id="chart-pie-products"></div>
+                    <div class="p-4 md:p-5 min-h-102.5 bg-white border border-gray-200 shadow-2xs rounded-xl dark:bg-[#343A3F] dark:text-white" id="chart-pie-piutang"></div>
+                </div>
             </div>
-            <!-- End Card -->
         </div>
-
+        
         <div class="my-5">
             <x-loading wire:loading wire:target="downloadExcel">
                 Exporting Or Import In Progress Please Wait
@@ -293,12 +299,16 @@
 <script>
     const chartData = {!! json_encode($totalPiutangByMonth) !!};
     const chartCategories = {!! json_encode($month) !!};
-    const appearance = localStorage.getItem('flux.appearance') || 'system';
+    const seriesProducts = {!! json_encode($seriesProducts) !!}
+    const labelsProducts = {!! json_encode($labelsProducts) !!}
+    const seriesPiutangCount = {!! json_encode($countPiutang) !!};
+    const labelsPiutangLabels = {!! json_encode($statusPiutang) !!};
 
+    const appearance = localStorage.getItem('flux.appearance') || 'system';
     const isDark = appearance === 'dark' || 
                 (appearance === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
-    console.log(isDark);
+    console.log(seriesProducts)
     function getChartOptions(data, categories) {
         return {
             colors: ['#FFA500'],
@@ -360,21 +370,165 @@
         };
     }
     const options = getChartOptions(chartData, chartCategories);
-    const chart = new ApexCharts(document.querySelector("#chart-month"), options);
+    const chartMonth = new ApexCharts(document.querySelector("#chart-month"), options);
 
-    chart.render();
+    chartMonth.render();
     Livewire.on('filter', (data) => {
         setTimeout(() => {
-            chart.updateSeries([{
+            chartMonth.updateSeries([{
                 name: 'Jumlah Piutang',
                 data: data[0].orders,
             }]);
 
-            chart.updateOptions({
+            chartMonth.updateOptions({
                 colors: [`${data[0].colors}`],
             });
         }, 300); // delay 300ms
     });
+
+
+    function getChartPieProducts(data, labels) {
+        return {
+            series: data,
+            chart: {
+                width: 500,
+                type: 'pie',
+            },
+            title: {
+                text: 'Distribusi Produk Piutang',
+                align: 'center'
+            },
+            theme: {
+                mode: isDark ? 'dark' : 'light'
+            },
+            labels: labels,
+            legend: {
+                position: 'bottom',
+                horizontalAlign: 'center',
+                show: false
+            },
+            tooltip: {
+                enabled: true // Matikan tooltip
+            },
+            responsive: [
+                {
+                    breakpoint: 1024,
+                    options: {
+                        chart: {
+                            width: 400
+                        },
+                        legend: {
+                            position: 'bottom',
+                            horizontalAlign: 'center',
+                            show: false
+                        }
+                    }
+                },
+                {
+                    breakpoint: 768,
+                    options: {
+                        chart: {
+                            width: 300
+                        },
+                        legend: {
+                            position: 'bottom',
+                            horizontalAlign: 'center',
+                            show: false
+                        }
+                    }
+                },
+                {
+                    breakpoint: 480,
+                    options: {
+                        chart: {
+                            width: 300
+                        },
+                        legend: {
+                            position: 'bottom',
+                            horizontalAlign: 'center',
+                            show: false
+                        }
+                    }
+                }
+            ]
+        }
+    }
+
+    const optionPie = getChartPieProducts(seriesProducts, labelsProducts);
+    const chartPie = new ApexCharts(document.querySelector("#chart-pie-products"), optionPie);
+    chartPie.render();
+
+
+    function getChartPiePiutang(data, labels) {
+        return {
+            series: data,
+            chart: {
+                width: 500,
+                type: 'pie',
+            },
+            title: {
+                text: 'Piutang Status',
+                align: 'center'
+            },
+            theme: {
+                mode: isDark ? 'dark' : 'light'
+            },
+            labels: labels,
+            legend: {
+                position: 'bottom',
+                horizontalAlign: 'center',
+                show: true
+            },
+            tooltip: {
+                enabled: true // Matikan tooltip
+            },
+            responsive: [
+                {
+                    breakpoint: 1024,
+                    options: {
+                        chart: {
+                            width: 400
+                        },
+                        legend: {
+                            position: 'bottom',
+                            horizontalAlign: 'center',
+                            show: false
+                        }
+                    }
+                },
+                {
+                    breakpoint: 768,
+                    options: {
+                        chart: {
+                            width: 300
+                        },
+                        legend: {
+                            position: 'bottom',
+                            horizontalAlign: 'center',
+                            show: false
+                        }
+                    }
+                },
+                {
+                    breakpoint: 480,
+                    options: {
+                        chart: {
+                            width: 300
+                        },
+                        legend: {
+                            position: 'bottom',
+                            horizontalAlign: 'center',
+                            show: false
+                        }
+                    }
+                }
+            ]
+        }
+    }
+
+    const optionPiePiutang = getChartPiePiutang(seriesPiutangCount,labelsPiutangLabels);
+    const chartPiePiutang = new ApexCharts(document.querySelector("#chart-pie-piutang"), optionPiePiutang);
+    chartPiePiutang.render();
 </script>
 @endscript
 

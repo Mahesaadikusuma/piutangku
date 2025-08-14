@@ -130,7 +130,7 @@
                             {{ number_format($product->price) }}
                         </td>
                         <td class="px-6 py-4">
-                            <div wire:ignore class="flex items-center gap-3">
+                            <div class="flex items-center gap-3">
                                 <flux:button size="sm" variant="primary" class="cursor-pointer" wire:click="edit({{ $product->id }})">Edit</flux:button>
                                 @can('delete')
                                     <flux:button size="sm" variant="danger" class="cursor-pointer"

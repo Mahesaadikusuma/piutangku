@@ -28,13 +28,16 @@ class DashboardService
         $countPiutang = $this->piutangRepository->getPiutangCount();
         $totalPiutang = $this->piutangRepository->getTotalPiutang();
         $totalSisaPiutang = $this->piutangRepository->getTotalSisaPiutang();
-
+        $countProductsPiutang = $this->piutangRepository->getPiutangProductCounts();
+        $getPiutangTotals = $this->piutangRepository->getPiutangTotals();
         return [
             'totalUsers' => $countUsers,
             'totalTransactions' => $countTransactions,
             'countPiutang' => $countPiutang,
             'totalPiutang' => $totalPiutang,
-            'totalSisaPiutang' => $totalSisaPiutang
+            'totalSisaPiutang' => $totalSisaPiutang,
+            'countProductsPiutang' => $countProductsPiutang,
+            'getPiutangTotals' => $getPiutangTotals
         ];
     }
 
@@ -44,11 +47,13 @@ class DashboardService
         $countTransactions = $this->transactionRepository->getCountTransactionsByUser();
         $totalPiutang = $this->piutangRepository->getPiutangTotalByUser();
         $totalSisaPiutang = $this->piutangRepository->getPiutangSisaHutangByUser();
+        $getPiutangTotalsByUser = $this->piutangRepository->getPiutangTotalsByUser();
         return [
             'totalPiutangCount' => $countPiutang,
             'totalTransactionsCount' => $countTransactions,
             'totalJumlahPiutang' => $totalPiutang,
             'totalSisaPiutang' => $totalSisaPiutang,
+            'getPiutangTotalsByUser' => $getPiutangTotalsByUser
         ];
     }
 
